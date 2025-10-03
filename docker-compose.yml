@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:14
+    container_name: agb_etp_postgres
+    environment:
+      POSTGRES_USER: agb_etp
+      POSTGRES_PASSWORD: agb_etp
+      POSTGRES_DB: agb_etp
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - agb_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agb_etp_backend
+    environment:
+      - DATABASE_URL=postgresql://agb_etp:agb_etp@postgres:5432/agb_etp
+      - POSTGRES_USER=agb_etp
+      - POSTGRES_PASSWORD=agb_etp
+      - POSTGRES_DB=agb_etp
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - SECRET_KEY=your-secret-key-here-change-this-in-production
+      - DEBUG=True
+      - CORS_ORIGINS=["http://localhost:3000", "http://127.0.0.1:3000", "http://frontend:3000"]
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - agb_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: agb_etp_frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - agb_network
+
+volumes:
+  postgres_data:
+
+networks:
+  agb_network:
+    driver: bridge
