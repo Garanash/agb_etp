@@ -65,7 +65,7 @@ export default function TenderPreview() {
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, index) => (
+            {[...Array(6)]?.map((_, index) => (
               <div key={index} className="card animate-pulse">
                 <div className="h-4 bg-secondary-200 rounded mb-4"></div>
                 <div className="h-3 bg-secondary-200 rounded mb-2"></div>
@@ -76,7 +76,7 @@ export default function TenderPreview() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {tenders.map((tender) => (
+            {tenders?.map((tender) => (
               <div key={tender.id} className="card hover:shadow-lg transition-shadow duration-200">
                 <h3 className="text-lg font-semibold text-secondary-900 mb-2 line-clamp-2">
                   {tender.title}

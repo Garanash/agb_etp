@@ -40,11 +40,11 @@ export default function OrganizersStep({ data, onChange, onNext, onBack }: Organ
   const validate = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!data.organizers.length) {
+    if (!data.organizers || !data.organizers.length) {
       newErrors.organizers = 'Добавьте хотя бы одного организатора'
     }
 
-    data.organizers.forEach((org, index) => {
+    data.organizers?.forEach((org, index) => {
       if (!org.organization_name) {
         newErrors[`organizer_${index}_name`] = 'Название организации обязательно'
       }
@@ -84,13 +84,13 @@ export default function OrganizersStep({ data, onChange, onNext, onBack }: Organ
   }
 
   const removeOrganizer = (index: number) => {
-    const newOrganizers = [...data.organizers]
+    const newOrganizers = [...(data.organizers || [])]
     newOrganizers.splice(index, 1)
     onChange({ ...data, organizers: newOrganizers })
   }
 
   const updateOrganizer = (index: number, field: keyof Organizer, value: string) => {
-    const newOrganizers = [...data.organizers]
+    const newOrganizers = [...(data.organizers || [])]
     newOrganizers[index] = { ...newOrganizers[index], [field]: value }
     onChange({ ...data, organizers: newOrganizers })
   }
@@ -113,7 +113,7 @@ export default function OrganizersStep({ data, onChange, onNext, onBack }: Organ
       )}
 
       <div className="space-y-6">
-        {data.organizers.map((organizer, index) => (
+        {data.organizers?.map((organizer, index) => (
           <div 
             key={index}
             className="bg-white border border-secondary-200 rounded-lg p-6"

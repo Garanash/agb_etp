@@ -252,7 +252,7 @@ export default function TenderInfo({ tender, currentUser, onTabChange }: TenderI
 
         <div className="mt-8">
           <h3 className="font-medium text-secondary-900 mb-3">Организатор</h3>
-          {tender.organizers.map((org) => (
+          {tender.organizers?.map((org) => (
             <div key={org.id} className="bg-secondary-50 rounded-lg p-4">
               <h4 className="font-medium text-secondary-900 mb-2">{org.organization_name}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">

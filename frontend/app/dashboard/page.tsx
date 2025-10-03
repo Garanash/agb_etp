@@ -292,7 +292,7 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-secondary-200">
-              {stats.recent_tenders.map((tender) => (
+              {stats.recent_tenders?.map((tender) => (
                 <tr key={tender.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-secondary-900">
@@ -328,7 +328,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {currentUser?.role === 'admin' && (
           <Link
-            href="/dashboard/users/create"
+            href="/admin/users"
             className="bg-white rounded-lg shadow-sm border border-secondary-200 p-6 hover:border-primary-300 transition-colors"
           >
             <div className="flex items-center space-x-4">

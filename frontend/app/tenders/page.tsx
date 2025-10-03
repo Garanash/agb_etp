@@ -215,7 +215,7 @@ export default function TendersPage() {
 
             {/* Список тендеров */}
             <div className="space-y-4">
-              {tenders.items.map((tender) => (
+              {tenders.items?.map((tender) => (
                 <TenderCard key={tender.id} tender={tender} />
               ))}
             </div>

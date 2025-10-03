@@ -235,7 +235,7 @@ export default function ApplicationsPage() {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-secondary-600">Поданы</p>
                   <p className="text-2xl font-bold text-secondary-900">
-                    {applications.filter(app => app.status === 'submitted').length}
+                    {applications?.filter(app => app.status === 'submitted').length || 0}
                   </p>
                 </div>
               </div>
@@ -249,7 +249,7 @@ export default function ApplicationsPage() {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-secondary-600">Приняты</p>
                   <p className="text-2xl font-bold text-secondary-900">
-                    {applications.filter(app => app.status === 'accepted').length}
+                    {applications?.filter(app => app.status === 'accepted').length || 0}
                   </p>
                 </div>
               </div>
@@ -263,7 +263,7 @@ export default function ApplicationsPage() {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-secondary-600">Отклонены</p>
                   <p className="text-2xl font-bold text-secondary-900">
-                    {applications.filter(app => app.status === 'rejected').length}
+                    {applications?.filter(app => app.status === 'rejected').length || 0}
                   </p>
                 </div>
               </div>
@@ -314,7 +314,7 @@ export default function ApplicationsPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {applications.map((application) => (
+                {applications?.map((application) => (
                   <div key={application.id} className="border border-secondary-200 rounded-lg p-6 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">

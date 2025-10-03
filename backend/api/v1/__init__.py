@@ -5,3 +5,4 @@ from . import users
 from . import export
 from . import imports
 from . import dashboard
+from . import files

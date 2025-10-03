@@ -185,7 +185,7 @@ export default function RegisterPage() {
                     className="input-field"
                   >
                     <option value="">Выберите правовую форму</option>
-                    {legalForms.map(form => (
+                    {legalForms?.map(form => (
                       <option key={form.value} value={form.value}>
                         {form.label}
                       </option>

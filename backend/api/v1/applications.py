@@ -17,30 +17,38 @@ async def create_application(
     current_user: UserModel = Depends(require_any_role([UserRole.SUPPLIER])),
     db: Session = Depends(get_db)
 ):
-    """Создание заявки на тендер (только для поставщиков)"""
-    # Проверяем, что тендер существует и опубликован
-    tender = db.query(Tender).filter(Tender.id == application_data.tender_id).first()
+    """Создание заявки на лот тендера (только для поставщиков)"""
+    # Проверяем, что лот существует
+    lot = db.query(TenderLot).filter(TenderLot.id == application_data.lot_id).first()
+    if not lot:
+        raise HTTPException(status_code=404, detail="Лот не найден")
+    
+    # Получаем тендер
+    tender = db.query(Tender).filter(Tender.id == lot.tender_id).first()
     if not tender:
         raise HTTPException(status_code=404, detail="Тендер не найден")
     
     if tender.status != "published":
         raise HTTPException(status_code=400, detail="Заявки можно подавать только на опубликованные тендеры")
     
-    # Проверяем, что пользователь уже не подавал заявку на этот тендер
+    # Проверяем, что пользователь уже не подавал заявку на этот лот
     existing_application = db.query(TenderApplication).filter(
         and_(
-            TenderApplication.tender_id == application_data.tender_id,
+            TenderApplication.lot_id == application_data.lot_id,
             TenderApplication.supplier_id == current_user.id
         )
     ).first()
     
     if existing_application:
-        raise HTTPException(status_code=400, detail="Вы уже подавали заявку на этот тендер")
+        raise HTTPException(status_code=400, detail="Вы уже подавали заявку на этот лот")
     
     # Создаем заявку
     db_application = TenderApplication(
-        **application_data.dict(),
+        tender_id=tender.id,
+        lot_id=application_data.lot_id,
         supplier_id=current_user.id,
+        proposed_price=application_data.proposed_price,
+        comment=application_data.comment,
         status="submitted"
     )
     db.add(db_application)

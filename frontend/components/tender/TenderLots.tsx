@@ -58,7 +58,7 @@ export default function TenderLots({ lots }: TenderLotsProps) {
 
   return (
     <div className="space-y-6">
-      {lots.map((lot) => (
+      {lots?.map((lot) => (
         <div
           key={lot.id}
           className="bg-white border border-secondary-200 rounded-lg"
@@ -173,7 +173,7 @@ export default function TenderLots({ lots }: TenderLotsProps) {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-secondary-200">
-                        {lot.products.map((product) => (
+                        {lot.products?.map((product) => (
                           <tr key={product.id}>
                             <td className="px-4 py-2 text-sm text-secondary-900">
                               {product.position_number}

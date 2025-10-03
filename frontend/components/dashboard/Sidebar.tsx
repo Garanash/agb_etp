@@ -82,11 +82,11 @@ export default function Sidebar({ userRole }: SidebarProps) {
       submenu: [
         {
           title: 'Все пользователи',
-          href: '/dashboard/users'
+          href: '/admin/users'
         },
         {
           title: 'Добавить пользователя',
-          href: '/dashboard/users/create'
+          href: '/admin/users'
         }
       ] as SubmenuItem[],
       roles: ['admin']
@@ -156,7 +156,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
         </div>
 
         <nav className="space-y-1">
-          {menuItems.map((item) => {
+          {menuItems?.map((item) => {
             if (item.roles && !item.roles.includes(userRole)) {
               return null
             }
@@ -169,7 +169,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
               }
 
               const isExpanded = expandedMenus.includes(item.id)
-              const hasActiveChild = item.submenu.some(subitem => 
+              const hasActiveChild = item.submenu?.some(subitem => 
                 !subitem.roles || subitem.roles.includes(userRole)
                   ? isActive(subitem.href)
                   : false
@@ -197,7 +197,7 @@ export default function Sidebar({ userRole }: SidebarProps) {
                   </button>
                   {isExpanded && (
                     <div className="mt-1 pl-10 space-y-1">
-                      {item.submenu.map((subitem) => {
+                      {item.submenu?.map((subitem) => {
                         if (subitem.roles && !subitem.roles.includes(userRole)) {
                           return null
                         }

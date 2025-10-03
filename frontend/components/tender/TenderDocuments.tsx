@@ -41,7 +41,7 @@ export default function TenderDocuments({ documents }: TenderDocumentsProps) {
 
   return (
     <div className="space-y-4">
-      {documents.map((doc) => (
+      {documents?.map((doc) => (
         <div 
           key={doc.id}
           className="flex items-center justify-between p-4 bg-white border border-secondary-200 rounded-lg hover:border-primary-300 transition-colors"

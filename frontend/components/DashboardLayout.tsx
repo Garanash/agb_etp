@@ -41,7 +41,7 @@ export default function DashboardLayout({ children, userRole, userName }: Dashbo
         return [
           ...baseItems,
           { href: '/dashboard/tenders', label: 'Управление тендерами', icon: FileText },
-          { href: '/dashboard/users', label: 'Пользователи', icon: Users },
+          { href: '/admin/users', label: 'Пользователи', icon: Users },
           { href: '/dashboard/settings', label: 'Настройки', icon: Settings },
         ]
       case 'contract_manager':
@@ -107,7 +107,7 @@ export default function DashboardLayout({ children, userRole, userName }: Dashbo
         {isMenuOpen && (
           <div className="bg-white border-b border-secondary-200 shadow-sm">
             <nav className="px-4 py-2 space-y-1">
-              {navigationItems.map((item) => (
+              {navigationItems?.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -140,7 +140,7 @@ export default function DashboardLayout({ children, userRole, userName }: Dashbo
           </div>
 
           <nav className="p-4 space-y-2">
-            {navigationItems.map((item) => (
+            {navigationItems?.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}

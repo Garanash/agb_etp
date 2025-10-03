@@ -542,7 +542,7 @@ export default function ApplicationDetailPage() {
                 <div className="mt-6">
                   <h3 className="font-medium text-secondary-900 mb-3">Лоты тендера</h3>
                   <div className="space-y-4">
-                    {application.tender.lots.map((lot) => (
+                    {application.tender.lots?.map((lot) => (
                       <div key={lot.id} className="border border-secondary-200 rounded-lg p-4">
                         <h4 className="font-medium text-secondary-900 mb-2">
                           Лот {lot.lot_number}: {lot.title}

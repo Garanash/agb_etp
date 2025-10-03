@@ -126,7 +126,7 @@ export default function CreateTenderPage() {
         {/* Прогресс */}
         <div className="mb-8">
           <div className="flex items-center justify-between relative">
-            {STEPS.map((step, index) => {
+            {STEPS?.map((step, index) => {
               const StepIcon = step.icon
               const isCurrent = step.id === currentStep
               const isCompleted = getCurrentStepIndex() > index

@@ -156,7 +156,7 @@ export default function UsersManagementPage() {
       })
 
       if (response.ok) {
-        setUsers(users.filter(user => user.id !== userId))
+        setUsers(users?.filter(user => user.id !== userId) || [])
         alert('Пользователь удален')
       } else {
         const errorData = await response.json()
@@ -187,7 +187,7 @@ export default function UsersManagementPage() {
     }
   }
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = users?.filter(user => {
     const matchesSearch = user.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesRole = !roleFilter || user.role === roleFilter
@@ -305,7 +305,7 @@ export default function UsersManagementPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-secondary-200">
-                {filteredUsers.map((user) => (
+                {filteredUsers?.map((user) => (
                   <tr key={user.id} className="hover:bg-secondary-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>

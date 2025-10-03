@@ -334,7 +334,7 @@ export default function TendersPage() {
           {/* Список тендеров */}
           {loading ? (
             <div className="space-y-4">
-              {[...Array(5)].map((_, index) => (
+              {[...Array(5)]?.map((_, index) => (
                 <div key={index} className="card animate-pulse">
                   <div className="h-6 bg-secondary-200 rounded mb-4"></div>
                   <div className="h-4 bg-secondary-200 rounded mb-2"></div>
@@ -349,7 +349,7 @@ export default function TendersPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {tenders.map((tender) => (
+              {tenders?.map((tender) => (
                 <div key={tender.id} className="card hover:shadow-lg transition-shadow duration-200">
                   <div className="flex justify-between items-start mb-4">
                     <h2 className="text-xl font-semibold text-secondary-900 flex-1 mr-4">
@@ -423,7 +423,7 @@ export default function TendersPage() {
                   Назад
                 </button>
                 
-                {[...Array(totalPages)].map((_, index) => {
+                {[...Array(totalPages)]?.map((_, index) => {
                   const pageNum = index + 1
                   if (pageNum === 1 || pageNum === totalPages || Math.abs(pageNum - page) <= 2) {
                     return (

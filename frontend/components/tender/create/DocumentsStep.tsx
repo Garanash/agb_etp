@@ -34,11 +34,11 @@ export default function DocumentsStep({ data, onChange, onSubmit, onBack }: Docu
   const validate = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!data.documents.length) {
+    if (!data.documents || !data.documents.length) {
       newErrors.documents = 'Добавьте хотя бы один документ'
     }
 
-    data.documents.forEach((doc, index) => {
+    data.documents?.forEach((doc, index) => {
       if (!doc.title) {
         newErrors[`document_${index}_title`] = 'Название документа обязательно'
       }
@@ -99,13 +99,13 @@ export default function DocumentsStep({ data, onChange, onSubmit, onBack }: Docu
   }
 
   const removeDocument = (index: number) => {
-    const newDocuments = [...data.documents]
+    const newDocuments = [...(data.documents || [])]
     newDocuments.splice(index, 1)
     onChange({ ...data, documents: newDocuments })
   }
 
   const updateDocument = (index: number, field: keyof Document, value: string) => {
-    const newDocuments = [...data.documents]
+    const newDocuments = [...(data.documents || [])]
     newDocuments[index] = { ...newDocuments[index], [field]: value }
     onChange({ ...data, documents: newDocuments })
   }
@@ -142,7 +142,7 @@ export default function DocumentsStep({ data, onChange, onSubmit, onBack }: Docu
       )}
 
       <div className="space-y-4">
-        {data.documents.map((doc, index) => (
+        {data.documents?.map((doc, index) => (
           <div 
             key={index}
             className="bg-white border border-secondary-200 rounded-lg p-4"

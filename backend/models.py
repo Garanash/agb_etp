@@ -194,6 +194,7 @@ class TenderApplication(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     tender_id = Column(Integer, ForeignKey("tenders.id"))
+    lot_id = Column(Integer, ForeignKey("tender_lots.id"), nullable=True)
     supplier_id = Column(Integer, ForeignKey("users.id"))
     proposed_price = Column(Numeric(15, 2))
     comment = Column(Text)
@@ -203,4 +204,5 @@ class TenderApplication(Base):
     
     # Связи
     tender = relationship("Tender", back_populates="applications")
+    lot = relationship("TenderLot")
     supplier = relationship("User", back_populates="applications")

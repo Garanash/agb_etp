@@ -52,18 +52,18 @@ export default function LotsStep({ data, onChange, onNext, onBack }: LotsStepPro
   const validate = () => {
     const newErrors: Record<string, string> = {}
 
-    if (!data.lots.length) {
+    if (!data.lots || !data.lots.length) {
       newErrors.lots = 'Добавьте хотя бы один лот'
     }
 
-    data.lots.forEach((lot, index) => {
+    data.lots?.forEach((lot, index) => {
       if (!lot.title) {
         newErrors[`lot_${index}_title`] = 'Название лота обязательно'
       }
-      if (!lot.products.length) {
+      if (!lot.products || !lot.products.length) {
         newErrors[`lot_${index}_products`] = 'Добавьте хотя бы один товар/услугу'
       }
-      lot.products.forEach((product, productIndex) => {
+      lot.products?.forEach((product, productIndex) => {
         if (!product.name) {
           newErrors[`lot_${index}_product_${productIndex}_name`] = 'Название товара/услуги обязательно'
         }
@@ -84,9 +84,9 @@ export default function LotsStep({ data, onChange, onNext, onBack }: LotsStepPro
     onChange({
       ...data,
       lots: [
-        ...data.lots,
+        ...(data.lots || []),
         {
-          lot_number: data.lots.length + 1,
+          lot_number: (data.lots || []).length + 1,
           title: '',
           description: '',
           initial_price: undefined,
@@ -105,7 +105,7 @@ export default function LotsStep({ data, onChange, onNext, onBack }: LotsStepPro
   }
 
   const removeLot = (index: number) => {
-    const newLots = [...data.lots]
+    const newLots = [...(data.lots || [])]
     newLots.splice(index, 1)
     // Обновляем номера лотов
     newLots.forEach((lot, i) => {
@@ -115,13 +115,16 @@ export default function LotsStep({ data, onChange, onNext, onBack }: LotsStepPro
   }
 
   const updateLot = (index: number, field: keyof Lot, value: any) => {
-    const newLots = [...data.lots]
+    const newLots = [...(data.lots || [])]
     newLots[index] = { ...newLots[index], [field]: value }
     onChange({ ...data, lots: newLots })
   }
 
   const addProduct = (lotIndex: number) => {
-    const newLots = [...data.lots]
+    const newLots = [...(data.lots || [])]
+    if (!newLots[lotIndex].products) {
+      newLots[lotIndex].products = []
+    }
     newLots[lotIndex].products.push({
       position_number: newLots[lotIndex].products.length + 1,
       name: '',
@@ -132,20 +135,24 @@ export default function LotsStep({ data, onChange, onNext, onBack }: LotsStepPro
   }
 
   const removeProduct = (lotIndex: number, productIndex: number) => {
-    const newLots = [...data.lots]
-    newLots[lotIndex].products.splice(productIndex, 1)
+    const newLots = [...(data.lots || [])]
+    if (newLots[lotIndex]?.products) {
+      newLots[lotIndex].products.splice(productIndex, 1)
+    }
     // Обновляем номера позиций
-    newLots[lotIndex].products.forEach((product, i) => {
+    newLots[lotIndex].products?.forEach((product, i) => {
       product.position_number = i + 1
     })
     onChange({ ...data, lots: newLots })
   }
 
   const updateProduct = (lotIndex: number, productIndex: number, field: keyof Product, value: string) => {
-    const newLots = [...data.lots]
-    newLots[lotIndex].products[productIndex] = {
-      ...newLots[lotIndex].products[productIndex],
-      [field]: value
+    const newLots = [...(data.lots || [])]
+    if (newLots[lotIndex]?.products?.[productIndex]) {
+      newLots[lotIndex].products[productIndex] = {
+        ...newLots[lotIndex].products[productIndex],
+        [field]: value
+      }
     }
     onChange({ ...data, lots: newLots })
   }
@@ -168,7 +175,7 @@ export default function LotsStep({ data, onChange, onNext, onBack }: LotsStepPro
       )}
 
       <div className="space-y-6">
-        {data.lots.map((lot, lotIndex) => (
+        {data.lots?.map((lot, lotIndex) => (
           <div 
             key={lotIndex}
             className="bg-white border border-secondary-200 rounded-lg p-6"
@@ -346,7 +353,7 @@ export default function LotsStep({ data, onChange, onNext, onBack }: LotsStepPro
                 )}
 
                 <div className="space-y-4">
-                  {lot.products.map((product, productIndex) => (
+                  {lot.products?.map((product, productIndex) => (
                     <div 
                       key={productIndex}
                       className="bg-secondary-50 rounded-lg p-4"
