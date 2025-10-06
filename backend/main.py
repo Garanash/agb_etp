@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from config import settings
-from api.v1 import auth, tenders, applications, users, export, imports, dashboard, files
+from api.v1 import auth, tenders, applications, users, export, imports, dashboard, files, suppliers, analytics
 
 # Создаем таблицы в базе данных
 Base.metadata.create_all(bind=engine)
@@ -32,6 +32,8 @@ app.include_router(export.router, prefix="/api/v1/export", tags=["Экспорт
 app.include_router(imports.router, prefix="/api/v1/import", tags=["Импорт данных"])
 app.include_router(dashboard.router, prefix="/api/v1/dashboard", tags=["Дашборд"])
 app.include_router(files.router, prefix="/api/v1/files", tags=["Файлы"])
+app.include_router(suppliers.router, prefix="/api/v1/suppliers", tags=["Поставщики"])
+app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Аналитика"])
 
 
 @app.get("/")

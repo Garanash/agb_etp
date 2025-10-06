@@ -15,6 +15,8 @@ import {
   XCircle,
   ArrowRight
 } from 'lucide-react'
+import { useAuth } from '@/components/AuthProvider'
+import { fetchWithAuth } from '@/lib/auth'
 
 interface DashboardStats {
   total_tenders: number
@@ -34,52 +36,25 @@ interface DashboardStats {
 
 export default function DashboardPage() {
   const router = useRouter()
+  const { user, loading: authLoading, isAuthenticated } = useAuth()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [currentUser, setCurrentUser] = useState<any>(null)
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    if (!token) {
+    if (authLoading) return
+    
+    if (!isAuthenticated) {
       router.push('/login')
       return
     }
 
-    fetchCurrentUser()
     fetchStats()
-  }, [])
-
-  const fetchCurrentUser = async () => {
-    try {
-      const token = localStorage.getItem('access_token')
-      if (!token) return
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setCurrentUser(data)
-      }
-    } catch (err) {
-      console.error('Ошибка загрузки данных пользователя:', err)
-    }
-  }
+  }, [authLoading, isAuthenticated])
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('access_token')
-      if (!token) return
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/stats`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/stats`)
 
       if (response.ok) {
         const data = await response.json()
@@ -133,12 +108,12 @@ export default function DashboardPage() {
     }
   }
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="p-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-          <p className="mt-4 text-secondary-600">Загрузка статистики...</p>
+          <p className="mt-4 text-secondary-600">Загрузка...</p>
         </div>
       </div>
     )
@@ -168,7 +143,7 @@ export default function DashboardPage() {
     <div className="p-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-secondary-900">
-          Добро пожаловать, {currentUser?.full_name}!
+          Добро пожаловать, {user?.full_name}!
         </h1>
         <p className="mt-2 text-secondary-600">
           Здесь вы можете увидеть основную статистику и последние обновления
@@ -326,7 +301,7 @@ export default function DashboardPage() {
 
       {/* Быстрые действия */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentUser?.role === 'admin' && (
+        {user?.role === 'admin' && (
           <Link
             href="/admin/users"
             className="bg-white rounded-lg shadow-sm border border-secondary-200 p-6 hover:border-primary-300 transition-colors"
@@ -347,7 +322,7 @@ export default function DashboardPage() {
           </Link>
         )}
 
-        {(currentUser?.role === 'admin' || currentUser?.role === 'contract_manager') && (
+        {(user?.role === 'admin' || user?.role === 'contract_manager') && (
           <Link
             href="/dashboard/tenders/create"
             className="bg-white rounded-lg shadow-sm border border-secondary-200 p-6 hover:border-primary-300 transition-colors"
@@ -368,7 +343,7 @@ export default function DashboardPage() {
           </Link>
         )}
 
-        {currentUser?.role === 'supplier' && (
+        {user?.role === 'supplier' && (
           <Link
             href="/tenders"
             className="bg-white rounded-lg shadow-sm border border-secondary-200 p-6 hover:border-primary-300 transition-colors"

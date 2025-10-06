@@ -45,6 +45,7 @@ class User(Base):
     # Связи
     supplier_profile = relationship("SupplierProfile", back_populates="user", uselist=False)
     applications = relationship("TenderApplication", back_populates="supplier")
+    supplier_proposals = relationship("SupplierProposal", back_populates="supplier")
 
 
 class SupplierProfile(Base):
@@ -99,6 +100,7 @@ class Tender(Base):
     lots = relationship("TenderLot", back_populates="tender")
     documents = relationship("TenderDocument", back_populates="tender")
     organizers = relationship("TenderOrganizer", back_populates="tender")
+    supplier_proposals = relationship("SupplierProposal", back_populates="tender")
 
 
 class TenderLot(Base):
@@ -206,3 +208,42 @@ class TenderApplication(Base):
     tender = relationship("Tender", back_populates="applications")
     lot = relationship("TenderLot")
     supplier = relationship("User", back_populates="applications")
+
+
+class SupplierProposal(Base):
+    __tablename__ = "supplier_proposals"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    tender_id = Column(Integer, ForeignKey("tenders.id"))
+    supplier_id = Column(Integer, ForeignKey("users.id"))
+    prepayment_percent = Column(Numeric(5, 2), default=0)  # Размер предоплаты в процентах
+    currency = Column(String, default="RUB")  # Валюта предложения
+    vat_percent = Column(Numeric(5, 2), default=20)  # НДС в процентах
+    general_comment = Column(Text)  # Общий комментарий к предложению
+    status = Column(String, default="draft")  # draft, submitted, accepted, rejected
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Связи
+    tender = relationship("Tender", back_populates="supplier_proposals")
+    supplier = relationship("User", back_populates="supplier_proposals")
+    proposal_items = relationship("ProposalItem", back_populates="proposal", cascade="all, delete-orphan")
+
+
+class ProposalItem(Base):
+    __tablename__ = "proposal_items"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    proposal_id = Column(Integer, ForeignKey("supplier_proposals.id"))
+    product_id = Column(Integer, ForeignKey("tender_products.id"))
+    is_available = Column(Boolean, default=True)  # Тогл наличия товара
+    is_analog = Column(Boolean, default=False)  # Тогл оригинал/аналог
+    price_per_unit = Column(Numeric(15, 2))  # Цена за единицу
+    delivery_days = Column(Integer)  # Срок поставки в днях
+    comment = Column(Text)  # Комментарий к позиции
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Связи
+    proposal = relationship("SupplierProposal", back_populates="proposal_items")
+    product = relationship("TenderProduct")

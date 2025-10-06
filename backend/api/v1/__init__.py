@@ -6,3 +6,5 @@ from . import export
 from . import imports
 from . import dashboard
 from . import files
+from . import suppliers
+from . import analytics

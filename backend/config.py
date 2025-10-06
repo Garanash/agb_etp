@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # Настройки файлов
     upload_dir: str = "uploads"
     max_file_size: int = 10485760  # 10MB в байтах
-    allowed_file_types: List[str] = ["pdf", "doc", "docx", "xls", "xlsx", "jpg", "jpeg", "png"]
+    allowed_file_types: str = "pdf,doc,docx,xls,xlsx,jpg,jpeg,png"
     
     # Настройки email
     smtp_host: Optional[str] = None
@@ -52,5 +52,10 @@ class Settings(BaseSettings):
         super().__init__(**kwargs)
         # Создаем директорию для загрузок если её нет
         os.makedirs(self.upload_dir, exist_ok=True)
+    
+    @property
+    def allowed_file_types_list(self) -> List[str]:
+        """Возвращает список разрешенных типов файлов"""
+        return [ext.strip() for ext in self.allowed_file_types.split(',')]
 
 settings = Settings()

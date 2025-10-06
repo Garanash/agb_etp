@@ -12,7 +12,8 @@ import {
   Package,
   ChevronDown,
   ChevronUp,
-  LogOut
+  LogOut,
+  BarChart3
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -72,6 +73,16 @@ export default function Sidebar({ userRole }: SidebarProps) {
           title: 'Мои заявки',
           href: '/dashboard/tenders/applications',
           roles: ['supplier']
+        },
+        {
+          title: 'Тендеры для участия',
+          href: '/supplier/tenders',
+          roles: ['supplier']
+        },
+        {
+          title: 'Мои предложения',
+          href: '/supplier/proposals',
+          roles: ['supplier']
         }
       ] as SubmenuItem[]
     },
@@ -126,6 +137,13 @@ export default function Sidebar({ userRole }: SidebarProps) {
         }
       ] as SubmenuItem[],
       roles: ['admin', 'contract_manager']
+    },
+    {
+      id: 'analytics',
+      title: 'Аналитика',
+      icon: BarChart3,
+      href: '/admin/analytics',
+      roles: ['admin', 'contract_manager', 'manager']
     },
     {
       id: 'settings',

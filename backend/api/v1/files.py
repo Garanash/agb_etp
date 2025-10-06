@@ -29,10 +29,10 @@ async def upload_file(
     
     # Проверяем тип файла
     file_extension = file.filename.split('.')[-1].lower() if '.' in file.filename else ''
-    if file_extension not in settings.allowed_file_types:
+    if file_extension not in settings.allowed_file_types_list:
         raise HTTPException(
             status_code=400,
-            detail=f"Неподдерживаемый тип файла. Разрешенные типы: {', '.join(settings.allowed_file_types)}"
+            detail=f"Неподдерживаемый тип файла. Разрешенные типы: {', '.join(settings.allowed_file_types_list)}"
         )
     
     try:

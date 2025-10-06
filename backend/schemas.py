@@ -180,3 +180,66 @@ class TenderApplication(TenderApplicationBase):
 
     class Config:
         from_attributes = True
+
+
+# Supplier Proposal schemas
+class ProposalItemBase(BaseModel):
+    product_id: int
+    is_available: bool = True
+    is_analog: bool = False
+    price_per_unit: Optional[Decimal] = None
+    delivery_days: Optional[int] = None
+    comment: Optional[str] = None
+
+class ProposalItemCreate(ProposalItemBase):
+    pass
+
+class ProposalItemUpdate(BaseModel):
+    is_available: Optional[bool] = None
+    is_analog: Optional[bool] = None
+    price_per_unit: Optional[Decimal] = None
+    delivery_days: Optional[int] = None
+    comment: Optional[str] = None
+
+class ProposalItem(ProposalItemBase):
+    id: int
+    proposal_id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+class SupplierProposalBase(BaseModel):
+    tender_id: int
+    prepayment_percent: Decimal = Decimal('0')
+    currency: str = "RUB"
+    vat_percent: Decimal = Decimal('20')
+    general_comment: Optional[str] = None
+
+class SupplierProposalCreate(SupplierProposalBase):
+    proposal_items: List[ProposalItemCreate] = []
+
+class SupplierProposalUpdate(BaseModel):
+    prepayment_percent: Optional[Decimal] = None
+    currency: Optional[str] = None
+    vat_percent: Optional[Decimal] = None
+    general_comment: Optional[str] = None
+    proposal_items: Optional[List[ProposalItemCreate]] = None
+
+class SupplierProposal(SupplierProposalBase):
+    id: int
+    supplier_id: int
+    status: str
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+    proposal_items: List[ProposalItem] = []
+
+    class Config:
+        from_attributes = True
+
+class SupplierProposalWithTender(SupplierProposal):
+    tender: Tender
+
+    class Config:
+        from_attributes = True
