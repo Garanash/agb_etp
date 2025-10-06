@@ -8,12 +8,12 @@ WORKDIR /app
 COPY package*.json ./
 
 # Устанавливаем зависимости
-RUN npm ci --only=production
+RUN npm ci
 
 # Копируем исходный код
 COPY . .
 
-# Собираем приложение
+# Очищаем кэш и собираем приложение
 RUN npm run build
 
 # Этап продакшена
