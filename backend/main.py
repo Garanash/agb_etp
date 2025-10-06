@@ -46,3 +46,13 @@ async def root():
 async def health_check():
     """Проверка состояния сервиса"""
     return {"status": "healthy"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.debug
+    )
