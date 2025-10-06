@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
-import { getAuthToken, removeAuthToken } from '../lib/auth'
+import { getAuthToken, removeAuthToken } from '../auth'
 
 interface User {
   id: number

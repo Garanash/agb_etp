@@ -16,7 +16,7 @@ import {
   ArrowRight
 } from 'lucide-react'
 import { useAuth } from '../../components/AuthProvider'
-import { fetchWithAuth } from '../../lib/auth'
+import { fetchWithAuth } from '../../auth'
 
 interface DashboardStats {
   total_tenders: number
