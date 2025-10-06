@@ -117,9 +117,19 @@ install_docker() {
     fi
     
     # Проверка, установлен ли Docker, но не в PATH
-    if [ -f /usr/bin/docker ] || [ -f /usr/local/bin/docker ]; then
+    DOCKER_PATHS="/usr/bin/docker /usr/local/bin/docker /snap/bin/docker"
+    DOCKER_FOUND=""
+    
+    for path in $DOCKER_PATHS; do
+        if [ -f "$path" ]; then
+            DOCKER_FOUND="$path"
+            break
+        fi
+    done
+    
+    if [ -n "$DOCKER_FOUND" ]; then
         print_warning "Docker установлен, но не в PATH. Добавляю в PATH..."
-        export PATH="/usr/bin:/usr/local/bin:$PATH"
+        export PATH="$(dirname $DOCKER_FOUND):$PATH"
         if command -v docker &> /dev/null; then
             print_success "Docker найден в PATH"
             docker --version

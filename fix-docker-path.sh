@@ -41,15 +41,10 @@ else
     print_warning "Docker не найден в PATH, ищем в системе..."
     
     # Ищем Docker в стандартных местах
-    DOCKER_PATHS=(
-        "/usr/bin/docker"
-        "/usr/local/bin/docker"
-        "/snap/bin/docker"
-        "/usr/lib/docker/docker"
-    )
+    DOCKER_PATHS="/usr/bin/docker /usr/local/bin/docker /snap/bin/docker /usr/lib/docker/docker"
     
     DOCKER_FOUND=""
-    for path in "${DOCKER_PATHS[@]}"; do
+    for path in $DOCKER_PATHS; do
         if [ -f "$path" ]; then
             DOCKER_FOUND="$path"
             print_info "Docker найден: $path"
@@ -82,14 +77,10 @@ else
     print_warning "Docker Compose не найден в PATH"
     
     # Ищем Docker Compose
-    COMPOSE_PATHS=(
-        "/usr/local/bin/docker-compose"
-        "/usr/bin/docker-compose"
-        "/snap/bin/docker-compose"
-    )
+    COMPOSE_PATHS="/usr/local/bin/docker-compose /usr/bin/docker-compose /snap/bin/docker-compose"
     
     COMPOSE_FOUND=""
-    for path in "${COMPOSE_PATHS[@]}"; do
+    for path in $COMPOSE_PATHS; do
         if [ -f "$path" ]; then
             COMPOSE_FOUND="$path"
             print_info "Docker Compose найден: $path"
