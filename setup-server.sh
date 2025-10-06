@@ -112,7 +112,7 @@ install_docker() {
     # Проверка существующей установки
     if command -v docker &> /dev/null; then
         print_warning "Docker уже установлен"
-        docker --version
+        docker --version 2>/dev/null || print_warning "Docker найден, но не отвечает"
         return
     fi
     
@@ -132,7 +132,7 @@ install_docker() {
         export PATH="$(dirname $DOCKER_FOUND):$PATH"
         if command -v docker &> /dev/null; then
             print_success "Docker найден в PATH"
-            docker --version
+            docker --version 2>/dev/null || print_warning "Docker найден, но не отвечает"
             return
         fi
     fi
@@ -189,7 +189,7 @@ install_docker() {
     sleep 2
     if docker --version >/dev/null 2>&1; then
         print_success "Docker настроен и запущен"
-        docker --version
+        docker --version 2>/dev/null || print_warning "Docker найден, но не отвечает"
     else
         print_warning "Docker установлен, но требует перезагрузки сессии"
         print_info "Выполните: source ~/.bashrc или перезайдите в систему"

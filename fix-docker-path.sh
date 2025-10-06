@@ -36,7 +36,7 @@ export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
 # Проверяем Docker
 if command -v docker &> /dev/null; then
     print_success "Docker найден в PATH"
-    docker --version
+    docker --version 2>/dev/null || print_warning "Docker найден, но не отвечает"
 else
     print_warning "Docker не найден в PATH, ищем в системе..."
     
@@ -58,7 +58,7 @@ else
         
         if command -v docker &> /dev/null; then
             print_success "Docker добавлен в PATH"
-            docker --version
+            docker --version 2>/dev/null || print_warning "Docker найден, но не отвечает"
         else
             print_error "Не удалось добавить Docker в PATH"
         fi
@@ -72,7 +72,7 @@ fi
 # Проверяем Docker Compose
 if command -v docker-compose &> /dev/null; then
     print_success "Docker Compose найден"
-    docker-compose --version
+    docker-compose --version 2>/dev/null || print_warning "Docker Compose найден, но не отвечает"
 else
     print_warning "Docker Compose не найден в PATH"
     
@@ -94,7 +94,7 @@ else
         
         if command -v docker-compose &> /dev/null; then
             print_success "Docker Compose добавлен в PATH"
-            docker-compose --version
+            docker-compose --version 2>/dev/null || print_warning "Docker Compose найден, но не отвечает"
         else
             print_error "Не удалось добавить Docker Compose в PATH"
         fi

@@ -10,7 +10,8 @@ export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
 
 # Проверяем Docker
 if command -v docker &> /dev/null; then
-    echo "✅ Docker найден: $(docker --version)"
+    DOCKER_VERSION=$(docker --version 2>/dev/null || echo "не отвечает")
+    echo "✅ Docker найден: $DOCKER_VERSION"
 else
     echo "❌ Docker не найден"
     echo "Попробуйте:"
@@ -21,7 +22,8 @@ fi
 
 # Проверяем Docker Compose
 if command -v docker-compose &> /dev/null; then
-    echo "✅ Docker Compose найден: $(docker-compose --version)"
+    COMPOSE_VERSION=$(docker-compose --version 2>/dev/null || echo "не отвечает")
+    echo "✅ Docker Compose найден: $COMPOSE_VERSION"
 else
     echo "⚠️  Docker Compose не найден"
 fi
