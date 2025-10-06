@@ -55,10 +55,17 @@ cd backend
 
 # Устанавливаем Python зависимости
 echo "📦 Установка Python зависимостей..."
+echo "Попытка установки через pip..."
 pip3 install --break-system-packages -r requirements.txt
 if [ $? -ne 0 ]; then
-    echo "❌ Ошибка установки зависимостей Backend"
-    exit 1
+    echo "⚠️  Установка через pip не удалась, пробуем системные пакеты..."
+    apt-get update
+    apt-get install -y python3-fastapi python3-uvicorn python3-sqlalchemy python3-psycopg2 python3-pydantic python3-passlib python3-bcrypt python3-pandas python3-numpy python3-openpyxl
+    pip3 install --break-system-packages python-jose python-multipart pydantic-settings email-validator
+    if [ $? -ne 0 ]; then
+        echo "❌ Ошибка установки зависимостей Backend"
+        exit 1
+    fi
 fi
 
 # Запускаем Backend в фоне
