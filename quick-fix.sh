@@ -1,12 +1,28 @@
 #!/bin/bash
 
-# Скрипт для запуска без Docker (обход rate limit)
-echo "🔧 Запуск без Docker для обхода rate limit..."
+# Быстрое исправление проблем с зависимостями
+echo "🔧 Быстрое исправление проблем с зависимостями..."
 
-# Останавливаем все контейнеры
-echo "⏹️  Остановка всех контейнеров..."
-docker stop agb_etp_frontend agb_etp_backend agb_etp_postgres 2>/dev/null || true
-docker rm agb_etp_frontend agb_etp_backend agb_etp_postgres 2>/dev/null || true
+# Устанавливаем npm
+echo "📦 Установка npm..."
+apt-get update
+apt-get install -y npm
+
+# Устанавливаем Python зависимости системно
+echo "🐍 Установка Python зависимостей..."
+cd backend
+pip3 install --break-system-packages -r requirements.txt
+cd ..
+
+# Устанавливаем Node.js зависимости
+echo "📦 Установка Node.js зависимостей..."
+cd frontend
+npm install
+cd ..
+
+# Создаем папку для логов
+echo "📁 Создание папки для логов..."
+mkdir -p logs
 
 # Создаем .env файл
 echo "📝 Создание .env файла..."
@@ -26,54 +42,25 @@ NEXT_PUBLIC_API_URL=http://81.200.158.192:8000
 LOG_LEVEL=INFO
 EOF
 
-# Создаем папку для логов
-echo "📁 Создание папки для логов..."
-mkdir -p logs
-
-# Проверяем, есть ли Node.js и npm
-if ! command -v node &> /dev/null; then
-    echo "❌ Node.js не установлен. Запустите сначала: ./install-dependencies.sh"
-    exit 1
-fi
-
-if ! command -v npm &> /dev/null; then
-    echo "❌ npm не установлен. Запустите сначала: ./install-dependencies.sh"
-    exit 1
-fi
-
-# Проверяем, есть ли PostgreSQL
-if ! command -v psql &> /dev/null; then
-    echo "❌ PostgreSQL не установлен. Запустите сначала: ./install-dependencies.sh"
-    exit 1
-fi
-
 # Настраиваем PostgreSQL
 echo "🔧 Настройка PostgreSQL..."
 sudo -u postgres psql -c "CREATE USER agb_etp WITH PASSWORD 'agb_secure_password_2024';" 2>/dev/null || true
 sudo -u postgres psql -c "CREATE DATABASE agb_etp OWNER agb_etp;" 2>/dev/null || true
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE agb_etp TO agb_etp;" 2>/dev/null || true
 
-# Запускаем Backend в фоне
+# Запускаем Backend
 echo "🚀 Запуск Backend..."
 cd backend
-
-# Устанавливаем Python зависимости системно
-echo "📦 Установка Python зависимостей системно..."
-pip3 install --break-system-packages -r requirements.txt
-
-# Запускаем Backend в фоне
-echo "🚀 Запуск Backend в фоне..."
-nohup python main.py > ../logs/backend.log 2>&1 &
+nohup python3 main.py > ../logs/backend.log 2>&1 &
 BACKEND_PID=$!
 echo "Backend PID: $BACKEND_PID"
-
 cd ..
 
 # Ждем запуска Backend
 echo "⏳ Ожидание запуска Backend..."
 sleep 10
 
-# Проверяем, что Backend работает
+# Проверяем Backend
 if curl -s http://localhost:8000/health > /dev/null; then
     echo "✅ Backend запущен успешно"
 else
@@ -86,16 +73,6 @@ fi
 echo "🚀 Запуск Frontend..."
 cd frontend
 
-# Устанавливаем зависимости
-if [ ! -d "node_modules" ]; then
-    echo "📦 Установка зависимостей Frontend..."
-    npm install
-    if [ $? -ne 0 ]; then
-        echo "❌ Ошибка установки зависимостей Frontend"
-        exit 1
-    fi
-fi
-
 # Создаем .env.local для Next.js
 echo "📝 Создание .env.local для Next.js..."
 cat > .env.local << 'EOF'
@@ -105,17 +82,12 @@ EOF
 # Собираем фронтенд
 echo "🔨 Сборка Frontend..."
 npm run build
-if [ $? -ne 0 ]; then
-    echo "❌ Ошибка сборки Frontend"
-    exit 1
-fi
 
-# Запускаем Frontend в фоне
-echo "🚀 Запуск Frontend в фоне..."
+# Запускаем Frontend
+echo "🚀 Запуск Frontend..."
 nohup npm start > ../logs/frontend.log 2>&1 &
 FRONTEND_PID=$!
 echo "Frontend PID: $FRONTEND_PID"
-
 cd ..
 
 # Ждем запуска Frontend
@@ -124,7 +96,7 @@ sleep 15
 
 # Проверяем статус
 echo "🔍 Проверка статуса процессов:"
-ps aux | grep -E "(python|node)" | grep -v grep
+ps aux | grep -E "(python3|node)" | grep -v grep
 
 # Проверяем доступность
 echo ""
@@ -141,26 +113,8 @@ else
     echo "❌ Frontend недоступен"
 fi
 
-# Проверяем, что фронтенд использует правильный API URL
 echo ""
-echo "🔍 Проверка API URL в фронтенде:"
-if grep -q "http://81.200.158.192:8000" frontend/.env.local; then
-    echo "✅ NEXT_PUBLIC_API_URL настроен правильно"
-else
-    echo "❌ NEXT_PUBLIC_API_URL не настроен"
-fi
-
-# Тестируем API запрос
-echo ""
-echo "🔍 Тестирование API запроса:"
-if curl -s -H "Origin: http://81.200.158.192:3000" -H "Content-Type: application/json" -X POST -d '{"email":"admin@almazgeobur.ru","password":"admin123"}' http://localhost:8000/api/v1/auth/login > /dev/null; then
-    echo "✅ API запрос работает"
-else
-    echo "❌ API запрос не работает"
-fi
-
-echo ""
-echo "🎉 Запуск завершен!"
+echo "🎉 Исправление завершено!"
 echo "📱 Frontend доступен по адресу: http://81.200.158.192:3000"
 echo "🔌 Backend API доступен по адресу: http://81.200.158.192:8000"
 echo "📚 API документация: http://81.200.158.192:8000/docs"

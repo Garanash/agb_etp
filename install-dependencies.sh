@@ -14,7 +14,7 @@ apt-get install -y python3 python3-pip python3-venv python3-dev
 # Устанавливаем Node.js
 echo "📦 Установка Node.js..."
 curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
-apt-get install -y nodejs
+apt-get install -y nodejs npm
 
 # Устанавливаем PostgreSQL
 echo "🐘 Установка PostgreSQL..."
