@@ -28,7 +28,7 @@ def create_admin():
         # Создаем администратора
         admin_user = User(
             email="admin@almazgeobur.ru",
-            hashed_password=get_password_hash("admin123"),
+            hashed_password=get_password_hash("admin123"[:72]),  # Ограничиваем длину пароля для bcrypt
             full_name="Администратор системы",
             role=UserRole.ADMIN,
             is_active=True
