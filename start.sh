@@ -49,6 +49,12 @@ else
     exit 1
 fi
 
+# Настраиваем PostgreSQL
+echo "🔧 Настройка PostgreSQL..."
+sudo -u postgres psql -c "CREATE USER agb_etp WITH PASSWORD 'agb_secure_password_2024';" 2>/dev/null || true
+sudo -u postgres psql -c "CREATE DATABASE agb_etp OWNER agb_etp;" 2>/dev/null || true
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE agb_etp TO agb_etp;" 2>/dev/null || true
+
 # Запускаем Backend
 echo "🚀 Запуск Backend..."
 cd backend
@@ -82,10 +88,17 @@ sleep 10
 # Проверяем Backend
 if curl -s http://localhost:8000/health > /dev/null; then
     echo "✅ Backend запущен"
+    
+    # Инициализируем базу данных
+    echo "🔧 Инициализация базы данных..."
+    cd backend
+    python3 init_db.py
+    cd ..
 else
     echo "❌ Backend не запустился"
     echo "Логи Backend:"
     cat logs/backend.log
+    exit 1
 fi
 
 # Запускаем Frontend

@@ -8,12 +8,12 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     
     # Настройки базы данных
-    database_url: str = "postgresql://agb_etp:agb_etp@localhost:5435/agb_etp"
+    database_url: str = "postgresql://agb_etp:agb_secure_password_2024@localhost:5432/agb_etp"
     postgres_user: str = "agb_etp"
-    postgres_password: str = "agb_etp"
+    postgres_password: str = "agb_secure_password_2024"
     postgres_db: str = "agb_etp"
     postgres_host: str = "localhost"
-    postgres_port: int = 5435
+    postgres_port: int = 5432
     
     # Настройки аутентификации
     secret_key: str = "your-secret-key-here-change-this-in-production"
