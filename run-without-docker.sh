@@ -26,20 +26,20 @@ NEXT_PUBLIC_API_URL=http://81.200.158.192:8000
 LOG_LEVEL=INFO
 EOF
 
+# Создаем папку для логов
+echo "📁 Создание папки для логов..."
+mkdir -p logs
+
 # Проверяем, есть ли Node.js
 if ! command -v node &> /dev/null; then
-    echo "📦 Установка Node.js..."
-    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-    apt-get install -y nodejs
+    echo "❌ Node.js не установлен. Запустите сначала: ./install-dependencies.sh"
+    exit 1
 fi
 
 # Проверяем, есть ли PostgreSQL
 if ! command -v psql &> /dev/null; then
-    echo "📦 Установка PostgreSQL..."
-    apt-get update
-    apt-get install -y postgresql postgresql-contrib
-    systemctl start postgresql
-    systemctl enable postgresql
+    echo "❌ PostgreSQL не установлен. Запустите сначала: ./install-dependencies.sh"
+    exit 1
 fi
 
 # Настраиваем PostgreSQL
@@ -56,6 +56,11 @@ cd backend
 if [ ! -d "venv" ]; then
     echo "📦 Создание виртуального окружения Python..."
     python3 -m venv venv
+    if [ $? -ne 0 ]; then
+        echo "❌ Ошибка создания виртуального окружения. Установите python3-venv:"
+        echo "   apt install python3-venv"
+        exit 1
+    fi
 fi
 
 source venv/bin/activate
@@ -90,6 +95,10 @@ cd frontend
 if [ ! -d "node_modules" ]; then
     echo "📦 Установка зависимостей Frontend..."
     npm install
+    if [ $? -ne 0 ]; then
+        echo "❌ Ошибка установки зависимостей Frontend"
+        exit 1
+    fi
 fi
 
 # Создаем .env.local для Next.js
@@ -101,6 +110,10 @@ EOF
 # Собираем фронтенд
 echo "🔨 Сборка Frontend..."
 npm run build
+if [ $? -ne 0 ]; then
+    echo "❌ Ошибка сборки Frontend"
+    exit 1
+fi
 
 # Запускаем Frontend в фоне
 echo "🚀 Запуск Frontend в фоне..."
