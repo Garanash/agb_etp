@@ -44,7 +44,7 @@ print_info() {
 
 # Проверка прав root
 check_root() {
-    if [ "$EUID" -ne 0 ]; then
+    if [ "$EUID" != "0" ] && [ "$EUID" != "" ]; then
         print_error "Этот скрипт должен запускаться с правами root"
         print_info "Используйте: sudo ./setup-server.sh"
         exit 1
@@ -203,7 +203,7 @@ install_docker_compose() {
     # Проверка существующей установки
     if command -v docker-compose &> /dev/null; then
         print_warning "Docker Compose уже установлен"
-        docker-compose --version
+        docker-compose --version 2>/dev/null || print_warning "Docker Compose найден, но не отвечает"
         return
     fi
     
@@ -630,7 +630,8 @@ final_check() {
     
     # Проверка Docker Compose
     if command -v docker-compose &> /dev/null; then
-        print_success "Docker Compose: $(docker-compose --version)"
+        COMPOSE_VERSION=$(docker-compose --version 2>/dev/null || echo "не отвечает")
+        print_success "Docker Compose: $COMPOSE_VERSION"
     else
         print_error "Docker Compose не установлен"
     fi

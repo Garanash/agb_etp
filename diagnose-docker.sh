@@ -47,17 +47,10 @@ echo ""
 print_header "Поиск Docker в системе"
 
 # Ищем все возможные места установки Docker
-DOCKER_LOCATIONS=(
-    "/usr/bin/docker"
-    "/usr/local/bin/docker"
-    "/snap/bin/docker"
-    "/usr/lib/docker/docker"
-    "/opt/docker/docker"
-    "/var/lib/docker/docker"
-)
+DOCKER_LOCATIONS="/usr/bin/docker /usr/local/bin/docker /snap/bin/docker /usr/lib/docker/docker /opt/docker/docker /var/lib/docker/docker"
 
 DOCKER_FOUND=""
-for location in "${DOCKER_LOCATIONS[@]}"; do
+for location in $DOCKER_LOCATIONS; do
     if [ -f "$location" ]; then
         print_success "Docker найден: $location"
         DOCKER_FOUND="$location"
