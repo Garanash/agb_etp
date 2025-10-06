@@ -13,6 +13,10 @@ RUN npm ci
 # Копируем исходный код
 COPY . .
 
+# Принимаем API URL как build argument
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Очищаем кэш и собираем приложение
 RUN npm run build
 
