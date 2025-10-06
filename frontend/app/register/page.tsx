@@ -57,7 +57,52 @@ export default function RegisterPage() {
       })
 
       if (response.ok) {
-        setSubmitMessage('Регистрация успешно завершена! Проверьте email для подтверждения.')
+        const userData = await response.json()
+        setSubmitMessage('Регистрация успешно завершена! Перенаправление в личный кабинет...')
+        
+        // Автоматический вход после регистрации
+        setTimeout(async () => {
+          try {
+            const loginResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: data.email,
+                password: data.password
+              }),
+            })
+
+            if (loginResponse.ok) {
+              const tokenData = await loginResponse.json()
+              
+              // Получаем данные пользователя
+              const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`, {
+                headers: {
+                  'Authorization': `Bearer ${tokenData.access_token}`
+                }
+              })
+              
+              if (userResponse.ok) {
+                const userInfo = await userResponse.json()
+                // Сохраняем токен и данные пользователя
+                localStorage.setItem('access_token', tokenData.access_token)
+                // Перенаправляем в личный кабинет
+                window.location.href = '/dashboard'
+              } else {
+                // Если не удалось получить данные пользователя, перенаправляем на страницу входа
+                window.location.href = '/login'
+              }
+            } else {
+              // Если автоматический вход не удался, перенаправляем на страницу входа
+              window.location.href = '/login'
+            }
+          } catch (error) {
+            // В случае ошибки перенаправляем на страницу входа
+            window.location.href = '/login'
+          }
+        }, 2000)
       } else {
         const errorData = await response.json()
         setSubmitMessage(`Ошибка: ${errorData.detail}`)
