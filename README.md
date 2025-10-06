@@ -267,8 +267,18 @@ npm test
 ## 📊 API Документация
 
 После запуска приложения API документация доступна по адресам:
+
+### Локальная разработка:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
+- **OpenAPI схема**: http://localhost:8000/openapi.json
+
+### Продакшен (через Nginx):
+- **Swagger UI**: http://yourdomain.com/docs
+- **ReDoc**: http://yourdomain.com/redoc
+- **OpenAPI схема**: http://yourdomain.com/openapi.json
+
+📚 **Подробная документация API**: [API_DOCS.md](API_DOCS.md)
 
 ## 🔒 Безопасность
 
