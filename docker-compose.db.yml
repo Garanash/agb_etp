@@ -1,0 +1,40 @@
+# 🏢 Алмазгеобур ЭТП - Только PostgreSQL в Docker
+# Запуск только базы данных в Docker, остальное нативно
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: agb_etp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: agb_etp
+      POSTGRES_PASSWORD: agb_secure_password_2024
+      POSTGRES_DB: agb_etp
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - agb_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agb_etp -d agb_etp"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+
+networks:
+  agb_network:
+    driver: bridge
