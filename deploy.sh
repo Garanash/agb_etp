@@ -426,12 +426,12 @@ show_access_info() {
     echo ""
     
     if [ "$mode" = "prod" ]; then
-        echo "📱 Доступ к приложению (Production):"
-        echo "   HTTP: http://$(hostname -I | awk '{print $1}')"
-        echo "   HTTPS: https://$(hostname -I | awk '{print $1}')"
-        echo "   API: http://$(hostname -I | awk '{print $1}')/api/"
-        echo "   API Docs (Swagger): http://$(hostname -I | awk '{print $1}')/docs"
-        echo "   API Docs (ReDoc): http://$(hostname -I | awk '{print $1}')/redoc"
+    echo "📱 Доступ к приложению (Production):"
+    echo "   HTTP: http://$(hostname -I | awk '{print $1}')"
+    echo "   HTTPS: https://$(hostname -I | awk '{print $1}')"
+    echo "   API: http://$(hostname -I | awk '{print $1}')/api/"
+    echo "   API Docs (Swagger): http://$(hostname -I | awk '{print $1}')/api/ololo/docs"
+    echo "   API Docs (ReDoc): http://$(hostname -I | awk '{print $1}')/api/ololo/redoc"
     else
         echo "📱 Доступ к приложению (Development):"
         echo "   Frontend: http://localhost:3000"

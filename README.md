@@ -294,9 +294,9 @@ npm test
 - **OpenAPI схема**: http://localhost:8000/openapi.json
 
 ### Продакшен (через Nginx):
-- **Swagger UI**: http://yourdomain.com/docs
-- **ReDoc**: http://yourdomain.com/redoc
-- **OpenAPI схема**: http://yourdomain.com/openapi.json
+- **Swagger UI**: http://yourdomain.com/api/ololo/docs
+- **ReDoc**: http://yourdomain.com/api/ololo/redoc
+- **OpenAPI схема**: http://yourdomain.com/api/ololo/openapi.json
 
 📚 **Подробная документация API**: [API_DOCS.md](API_DOCS.md)
 
