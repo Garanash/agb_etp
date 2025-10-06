@@ -187,12 +187,16 @@ install_docker() {
     
     # Проверяем, что Docker работает
     sleep 2
+    
+    # Обновляем PATH для проверки
+    export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
+    
     if docker --version >/dev/null 2>&1; then
         print_success "Docker настроен и запущен"
         docker --version 2>/dev/null || print_warning "Docker найден, но не отвечает"
     else
-        print_warning "Docker установлен, но требует перезагрузки сессии"
-        print_info "Выполните: source ~/.bashrc или перезайдите в систему"
+        print_warning "Docker установлен, но требует обновления PATH"
+        print_info "Выполните: ./fix-docker-after-install.sh"
     fi
 }
 
@@ -295,11 +299,11 @@ install_tools() {
                 net-tools \
                 dnsutils \
                 telnet \
-                nc \
+                netcat-openbsd \
                 tcpdump \
                 strace \
                 lsof \
-                ps aux
+                procps
             ;;
         "CentOS Linux"|"Red Hat Enterprise Linux")
             print_step "Установка инструментов на CentOS/RHEL..."
@@ -694,7 +698,7 @@ show_next_steps() {
     echo "     ./deploy-prod.sh"
     echo
     echo "🔧 Если Docker не найден в PATH:"
-    echo "     ./fix-docker-path.sh"
+    echo "     ./fix-docker-after-install.sh"
     echo
     echo "🔧 Полезные команды:"
     echo "  system-monitor.sh    - мониторинг системы"

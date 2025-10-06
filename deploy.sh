@@ -33,8 +33,13 @@ print_error() {
 # Проверка наличия Docker
 check_docker() {
     print_message "Проверка Docker..."
+    
+    # Обновляем PATH для поиска Docker
+    export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
+    
     if ! command -v docker &> /dev/null; then
         print_error "Docker не установлен. Установите Docker и попробуйте снова."
+        print_message "Попробуйте: sudo ./setup-server.sh"
         exit 1
     fi
     
