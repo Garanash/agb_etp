@@ -51,6 +51,21 @@ check_root() {
     fi
 }
 
+# Настройка PATH
+setup_path() {
+    print_step "Настройка PATH..."
+    
+    # Добавляем стандартные пути для Docker
+    export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
+    
+    # Проверяем, есть ли Docker в системе
+    if [ -f /usr/bin/docker ] || [ -f /usr/local/bin/docker ] || [ -f /snap/bin/docker ]; then
+        print_info "Docker найден в системе"
+    else
+        print_info "Docker не найден, будет установлен"
+    fi
+}
+
 # Определение операционной системы
 detect_os() {
     if [ -f /etc/os-release ]; then
@@ -101,6 +116,17 @@ install_docker() {
         return
     fi
     
+    # Проверка, установлен ли Docker, но не в PATH
+    if [ -f /usr/bin/docker ] || [ -f /usr/local/bin/docker ]; then
+        print_warning "Docker установлен, но не в PATH. Добавляю в PATH..."
+        export PATH="/usr/bin:/usr/local/bin:$PATH"
+        if command -v docker &> /dev/null; then
+            print_success "Docker найден в PATH"
+            docker --version
+            return
+        fi
+    fi
+    
     case $OS in
         "Ubuntu"|"Debian GNU/Linux")
             print_step "Установка Docker на Ubuntu/Debian..."
@@ -146,7 +172,18 @@ install_docker() {
     # Добавление пользователя в группу docker
     usermod -aG docker $SUDO_USER
     
-    print_success "Docker настроен и запущен"
+    # Обновляем PATH для текущей сессии
+    export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
+    
+    # Проверяем, что Docker работает
+    sleep 2
+    if docker --version >/dev/null 2>&1; then
+        print_success "Docker настроен и запущен"
+        docker --version
+    else
+        print_warning "Docker установлен, но требует перезагрузки сессии"
+        print_info "Выполните: source ~/.bashrc или перезайдите в систему"
+    fi
 }
 
 # Установка Docker Compose
@@ -571,8 +608,12 @@ final_check() {
     echo
     
     # Проверка Docker
+    export PATH="/usr/bin:/usr/local/bin:/snap/bin:$PATH"
     if command -v docker &> /dev/null; then
         print_success "Docker: $(docker --version)"
+    elif [ -f /usr/bin/docker ] || [ -f /usr/local/bin/docker ] || [ -f /snap/bin/docker ]; then
+        print_warning "Docker установлен, но не в PATH"
+        print_info "Выполните: export PATH=\"/usr/bin:/usr/local/bin:/snap/bin:\$PATH\""
     else
         print_error "Docker не установлен"
     fi
@@ -641,6 +682,9 @@ show_next_steps() {
     echo "  4. Запустите приложение:"
     echo "     ./deploy-prod.sh"
     echo
+    echo "🔧 Если Docker не найден в PATH:"
+    echo "     ./fix-docker-path.sh"
+    echo
     echo "🔧 Полезные команды:"
     echo "  system-monitor.sh    - мониторинг системы"
     echo "  app-monitor.sh       - мониторинг приложения"
@@ -665,6 +709,7 @@ main() {
     echo
     
     check_root
+    setup_path
     detect_os
     update_system
     install_docker
