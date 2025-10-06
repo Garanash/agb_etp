@@ -47,4 +47,4 @@ echo "npm version: $(npm --version)"
 echo "PostgreSQL version: $(psql --version)"
 
 echo "✅ Зависимости установлены успешно!"
-echo "Теперь можно запустить: ./run-without-docker.sh"
+echo "Теперь можно запустить: ./start.sh"
