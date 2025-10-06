@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { LogIn, Mail, Lock, Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '@/components/AuthProvider'
+import { useAuth } from '../../components/AuthProvider'
 
 interface LoginForm {
   email: string

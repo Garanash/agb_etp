@@ -15,8 +15,8 @@ import {
   XCircle,
   ArrowRight
 } from 'lucide-react'
-import { useAuth } from '@/components/AuthProvider'
-import { fetchWithAuth } from '@/lib/auth'
+import { useAuth } from '../../components/AuthProvider'
+import { fetchWithAuth } from '../../lib/auth'
 
 interface DashboardStats {
   total_tenders: number

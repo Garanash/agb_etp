@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import TenderFilters from '@/components/tender/TenderFilters'
-import TenderCard from '@/components/tender/TenderCard'
+import TenderFilters from '../../components/tender/TenderFilters'
+import TenderCard from '../../components/tender/TenderCard'
 import { ChevronLeft, ChevronRight, XCircle } from 'lucide-react'
 
 interface Tender {

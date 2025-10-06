@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import TenderInfo from '@/components/tender/TenderInfo'
-import TenderLots from '@/components/tender/TenderLots'
-import TenderDocuments from '@/components/tender/TenderDocuments'
+import TenderInfo from '../../../components/tender/TenderInfo'
+import TenderLots from '../../../components/tender/TenderLots'
+import TenderDocuments from '../../../components/tender/TenderDocuments'
 import { 
   FileText,
   Building2,

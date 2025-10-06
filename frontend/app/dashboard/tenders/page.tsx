@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import DashboardLayout from '@/components/DashboardLayout'
-import ApplicationModal from '@/components/ApplicationModal'
+import DashboardLayout from '../../../components/DashboardLayout'
+import ApplicationModal from '../../../components/ApplicationModal'
 import { 
   Plus, 
   Eye, 

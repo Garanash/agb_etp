@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import BasicInfoStep from '@/components/tender/BasicInfoStep'
-import OrganizersStep from '@/components/tender/OrganizersStep'
-import LotsStep from '@/components/tender/LotsStep'
-import DocumentsStep from '@/components/tender/DocumentsStep'
+import BasicInfoStep from '../../../../../components/tender/BasicInfoStep'
+import OrganizersStep from '../../../../../components/tender/OrganizersStep'
+import LotsStep from '../../../../../components/tender/LotsStep'
+import DocumentsStep from '../../../../../components/tender/DocumentsStep'
 import { FileText, Building2, Package, Upload, XCircle } from 'lucide-react'
 
 const STEPS = [
