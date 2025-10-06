@@ -2,7 +2,7 @@
 
 ## 📋 Обзор архитектуры
 
-- **PostgreSQL** - в Docker контейнере
+- **PostgreSQL** - системный сервис
 - **Backend (FastAPI)** - нативно на сервере
 - **Frontend (Next.js)** - нативно на сервере
 
@@ -12,8 +12,7 @@
 - Ubuntu 20.04+ или Debian 10+
 - Python 3.8+
 - Node.js 18+
-- Docker и Docker Compose
-- PostgreSQL клиент
+- PostgreSQL 14+
 
 ### Порты:
 - **3000** - Frontend
@@ -38,17 +37,11 @@ curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt install -y nodejs npm
 ```
 
-### 4. Установка Docker
+### 4. Установка PostgreSQL
 ```bash
-sudo apt install -y docker.io docker-compose
-sudo systemctl start docker
-sudo systemctl enable docker
-sudo usermod -aG docker $USER
-```
-
-### 5. Установка PostgreSQL клиента
-```bash
-sudo apt install -y postgresql-client
+sudo apt install -y postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
 ```
 
 ## 🚀 Развертывание
@@ -75,7 +68,7 @@ cd ..
 ### 3. Запуск приложения
 ```bash
 # Сделать скрипты исполняемыми
-chmod +x start.sh stop.sh
+chmod +x start.sh stop.sh install-dependencies.sh
 
 # Запустить приложение
 ./start.sh
@@ -85,8 +78,8 @@ chmod +x start.sh stop.sh
 
 ### Проверка сервисов:
 ```bash
-# PostgreSQL (Docker)
-docker ps | grep postgres
+# PostgreSQL (системный)
+sudo systemctl status postgresql
 
 # Backend API
 curl http://localhost:8000/health
@@ -129,7 +122,7 @@ tail -f logs/backend.log
 tail -f logs/frontend.log
 
 # PostgreSQL логи
-docker logs agb_etp_postgres
+sudo journalctl -u postgresql -f
 ```
 
 ### Статус процессов:
@@ -137,8 +130,8 @@ docker logs agb_etp_postgres
 # Все процессы
 ps aux | grep -E "(python3|node)" | grep -v grep
 
-# Docker контейнеры
-docker ps
+# Системные сервисы
+sudo systemctl status postgresql
 ```
 
 ## 🔧 Настройка
@@ -198,11 +191,14 @@ npm run build
 
 ### PostgreSQL не запускается:
 ```bash
+# Проверить статус
+sudo systemctl status postgresql
+
 # Проверить логи
-docker logs agb_etp_postgres
+sudo journalctl -u postgresql
 
 # Перезапустить
-docker-compose -f docker-compose.db.yml restart
+sudo systemctl restart postgresql
 ```
 
 ### Проблемы с портами:

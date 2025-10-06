@@ -32,16 +32,17 @@ NEXT_PUBLIC_API_URL=http://81.200.158.192:8000
 LOG_LEVEL=INFO
 EOF
 
-# Запускаем PostgreSQL в Docker
-echo "🐘 Запуск PostgreSQL в Docker..."
-docker-compose -f docker-compose.db.yml up -d
+# Запускаем системный PostgreSQL
+echo "🐘 Запуск системного PostgreSQL..."
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
 
 # Ждем запуска PostgreSQL
 echo "⏳ Ожидание запуска PostgreSQL..."
-sleep 10
+sleep 5
 
 # Проверяем, что PostgreSQL запустился
-if docker ps | grep -q agb_etp_postgres; then
+if systemctl is-active --quiet postgresql; then
     echo "✅ PostgreSQL запущен"
 else
     echo "❌ PostgreSQL не запустился"
