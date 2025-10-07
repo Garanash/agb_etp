@@ -82,7 +82,7 @@ export default function TenderDetailPage() {
   const [activeTab, setActiveTab] = useState('main')
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
     if (!token) {
       router.push('/login')
       return
@@ -94,7 +94,7 @@ export default function TenderDetailPage() {
 
   const fetchCurrentUser = async () => {
     try {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       if (!token) return
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`, {
@@ -114,7 +114,7 @@ export default function TenderDetailPage() {
 
   const fetchTender = async () => {
     try {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       if (!token) return
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/tenders/${params.id}`, {
