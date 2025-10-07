@@ -51,12 +51,51 @@ export default function SupplierProposalsPage() {
   const [proposals, setProposals] = useState<SupplierProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [statusFilter, setStatusFilter] = useState('');
+
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+    
+    fetchCurrentUser();
+    fetchProposals();
+  }, []);
+
+  const fetchCurrentUser = async () => {
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+      if (!token) return;
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/v1/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentUser(data);
+        
+        // Проверяем, что пользователь - поставщик
+        if (data.role !== 'supplier') {
+          setError('Только поставщики могут просматривать свои предложения. Ваша роль: ' + data.role);
+          return;
+        }
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки данных пользователя:', err);
+    }
+  };
 
   const fetchProposals = async () => {
     try {
       setLoading(true);
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
       
       const params = new URLSearchParams();
       if (statusFilter) params.append('status', statusFilter);

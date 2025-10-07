@@ -322,30 +322,39 @@ async def create_tender_proposal(
 
 
 @router.get("/proposals")
-async def get_user_proposals(
+async def get_proposals(
     current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Получение предложений пользователя (доступно всем пользователям)"""
-    
-    # Проверяем, что пользователь - поставщик
-    if current_user.role != UserRole.SUPPLIER:
-        raise HTTPException(
-            status_code=403,
-            detail="Только поставщики могут просматривать предложения"
-        )
+    """Получение предложений в зависимости от роли пользователя"""
     
     # Импортируем необходимые модели
-    from models import SupplierProposal, ProposalItem
+    from models import SupplierProposal, ProposalItem, Tender
     
-    # Получаем предложения пользователя
-    proposals = db.query(SupplierProposal).filter(
-        SupplierProposal.supplier_id == current_user.id
-    ).all()
+    # Определяем какие предложения показывать в зависимости от роли
+    if current_user.role == UserRole.SUPPLIER:
+        # Поставщики видят только свои предложения
+        proposals = db.query(SupplierProposal).filter(
+            SupplierProposal.supplier_id == current_user.id
+        ).all()
+    elif current_user.role in [UserRole.ADMIN, UserRole.CONTRACT_MANAGER, UserRole.MANAGER]:
+        # Админы, контрактные управляющие и менеджеры видят все предложения
+        proposals = db.query(SupplierProposal).all()
+    else:
+        raise HTTPException(
+            status_code=403,
+            detail="У вас нет прав для просмотра предложений"
+        )
     
     # Загружаем связанные данные
     result = []
     for proposal in proposals:
+        # Получаем информацию о тендере
+        tender = db.query(Tender).filter(Tender.id == proposal.tender_id).first()
+        
+        # Получаем информацию о поставщике
+        supplier = db.query(UserModel).filter(UserModel.id == proposal.supplier_id).first()
+        
         proposal_data = {
             "id": proposal.id,
             "tender_id": proposal.tender_id,
@@ -357,7 +366,20 @@ async def get_user_proposals(
             "status": proposal.status,
             "created_at": proposal.created_at.isoformat() if proposal.created_at else None,
             "updated_at": proposal.updated_at.isoformat() if proposal.updated_at else None,
-            "proposal_items": []
+            "proposal_items": [],
+            # Дополнительная информация для админов/менеджеров
+            "tender_info": {
+                "title": tender.title if tender else "Тендер не найден",
+                "status": tender.status if tender else "unknown",
+                "initial_price": float(tender.initial_price) if tender and tender.initial_price else None,
+                "currency": tender.currency if tender else None,
+                "deadline": tender.deadline.isoformat() if tender and tender.deadline else None,
+            } if current_user.role in [UserRole.ADMIN, UserRole.CONTRACT_MANAGER, UserRole.MANAGER] else None,
+            "supplier_info": {
+                "full_name": supplier.full_name if supplier else "Поставщик не найден",
+                "email": supplier.email if supplier else None,
+                "phone": supplier.phone if supplier else None,
+            } if current_user.role in [UserRole.ADMIN, UserRole.CONTRACT_MANAGER, UserRole.MANAGER] else None,
         }
         
         # Загружаем элементы предложения
