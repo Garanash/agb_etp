@@ -33,6 +33,7 @@ RUN adduser --system --uid 1001 nextjs
 # Копируем собранное приложение
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # Создаем папку public если её нет
 RUN mkdir -p ./public
