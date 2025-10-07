@@ -56,12 +56,13 @@ export default function SupplierProposalsPage() {
   const fetchProposals = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       
       const params = new URLSearchParams();
       if (statusFilter) params.append('status', statusFilter);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/proposals?${params}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/suppliers/proposals?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

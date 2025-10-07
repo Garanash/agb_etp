@@ -59,13 +59,14 @@ export default function UsersManagementPage() {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       if (!token) {
         router.push('/login')
         return
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/users/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -88,10 +89,11 @@ export default function UsersManagementPage() {
 
   const handleCreateUser = async () => {
     try {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       if (!token) return
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/users/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -117,10 +119,11 @@ export default function UsersManagementPage() {
 
   const handleResetPassword = async (userId: number) => {
     try {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       if (!token) return
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${userId}/reset-password`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/users/${userId}/reset-password`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -145,10 +148,11 @@ export default function UsersManagementPage() {
     }
 
     try {
-      const token = localStorage.getItem('access_token')
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
       if (!token) return
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${userId}`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

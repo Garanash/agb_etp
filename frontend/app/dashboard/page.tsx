@@ -60,9 +60,10 @@ export default function DashboardPage() {
 
   const fetchStats = async () => {
     try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
       const [statsResponse, tendersResponse] = await Promise.all([
-        fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/stats`),
-        fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/recent-tenders`)
+        fetchWithAuth(`${apiUrl}/api/v1/dashboard/stats`),
+        fetchWithAuth(`${apiUrl}/api/v1/dashboard/recent-tenders`)
       ])
 
       if (statsResponse.ok) {

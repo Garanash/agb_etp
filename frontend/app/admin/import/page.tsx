@@ -31,8 +31,9 @@ export default function ImportPage() {
       const formData = new FormData()
       formData.append('file', file)
 
-      const token = localStorage.getItem('access_token')
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/import/tenders/csv`, {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/import/tenders/csv`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

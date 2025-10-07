@@ -63,6 +63,12 @@ cat > frontend/.env.local << EOF
 NEXT_PUBLIC_API_URL=http://$SERVER_IP:8000
 EOF
 
+# Создание .env.production для Frontend
+echo "📝 Создание .env.production для Frontend..."
+cat > frontend/.env.production << EOF
+NEXT_PUBLIC_API_URL=http://$SERVER_IP:8000
+EOF
+
 # Запуск PostgreSQL в Docker (минимальная конфигурация)
 echo "🐘 Запуск PostgreSQL в Docker..."
 docker-compose -f docker-compose.postgres.yml up -d

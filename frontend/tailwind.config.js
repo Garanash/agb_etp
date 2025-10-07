@@ -5,6 +5,19 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // Поддержка старых браузеров
+  corePlugins: {
+    // Отключаем современные функции для лучшей совместимости
+    backdropBlur: false,
+    backdropSaturate: false,
+    backdropSepia: false,
+    backdropBrightness: false,
+    backdropContrast: false,
+    backdropGrayscale: false,
+    backdropHueRotate: false,
+    backdropInvert: false,
+    backdropOpacity: false,
+  },
   theme: {
     extend: {
       colors: {

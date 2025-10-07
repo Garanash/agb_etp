@@ -5,6 +5,10 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { AuthProvider } from '../components/AuthProvider'
 
+// Импорт полифиллов для поддержки старых браузеров
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {

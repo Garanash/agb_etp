@@ -80,7 +80,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const login = (token: string, userData: User) => {
-    localStorage.setItem('access_token', token)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('access_token', token)
+    }
     setUser(userData)
   }
 

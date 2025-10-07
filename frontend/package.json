@@ -24,7 +24,8 @@
     "react-query": "^3.39.3",
     "date-fns": "^2.30.0",
     "clsx": "^2.0.0",
-    "lucide-react": "^0.294.0"
+    "lucide-react": "^0.294.0",
+    "core-js": "^3.35.0"
   },
   "devDependencies": {
     "eslint": "^8",

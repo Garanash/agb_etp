@@ -121,10 +121,11 @@ export default function TenderDetailPage({ params }: { params: { id: string } })
   const fetchTenderData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
       // Получаем информацию о тендере
-      const tenderResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/tenders/${tenderId}`, {
+      const tenderResponse = await fetch(`${apiUrl}/api/v1/suppliers/tenders/${tenderId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -138,7 +139,7 @@ export default function TenderDetailPage({ params }: { params: { id: string } })
       setTender(tenderData);
 
       // Получаем список товаров для предложения
-      const productsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/tenders/${tenderId}/products`, {
+      const productsResponse = await fetch(`${apiUrl}/api/v1/suppliers/tenders/${tenderId}/products`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -165,7 +166,7 @@ export default function TenderDetailPage({ params }: { params: { id: string } })
       }
 
       // Проверяем, есть ли уже предложение
-      const proposalsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/proposals`, {
+      const proposalsResponse = await fetch(`${apiUrl}/api/v1/suppliers/proposals`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -203,11 +204,12 @@ export default function TenderDetailPage({ params }: { params: { id: string } })
   const handleSubmitProposal = async () => {
     try {
       setSubmitting(true);
-      const token = localStorage.getItem('token');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
       if (existingProposal) {
         // Обновляем существующее предложение
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/proposals/${existingProposal.id}`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+        const response = await fetch(`${apiUrl}/api/v1/suppliers/proposals/${existingProposal.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -221,7 +223,8 @@ export default function TenderDetailPage({ params }: { params: { id: string } })
         }
       } else {
         // Создаем новое предложение
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/proposals`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+        const response = await fetch(`${apiUrl}/api/v1/suppliers/proposals`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -239,7 +242,8 @@ export default function TenderDetailPage({ params }: { params: { id: string } })
       }
 
       // Отправляем предложение
-      const proposalResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/proposals/${existingProposal?.id || 'new'}/submit`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const proposalResponse = await fetch(`${apiUrl}/api/v1/suppliers/proposals/${existingProposal?.id || 'new'}/submit`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
