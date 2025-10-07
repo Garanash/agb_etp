@@ -26,18 +26,24 @@ interface DashboardStats {
   total_users: number
   total_products: number
   total_amount: number
-  recent_tenders: Array<{
-    id: number
-    title: string
-    status: string
-    created_at: string
-  }>
+}
+
+interface RecentTender {
+  id: number
+  title: string
+  status: string
+  created_at: string
+  applications_count?: number
+  my_application_status?: string
+  my_proposed_price?: number
+  created_by?: number
 }
 
 export default function DashboardPage() {
   const router = useRouter()
   const { user, loading: authLoading, isAuthenticated } = useAuth()
   const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [recentTenders, setRecentTenders] = useState<RecentTender[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -54,16 +60,24 @@ export default function DashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const response = await fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/stats`)
+      const [statsResponse, tendersResponse] = await Promise.all([
+        fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/stats`),
+        fetchWithAuth(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dashboard/recent-tenders`)
+      ])
 
-      if (response.ok) {
-        const data = await response.json()
-        setStats(data)
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json()
+        setStats(statsData)
       } else {
         setError('Ошибка загрузки статистики')
       }
+
+      if (tendersResponse.ok) {
+        const tendersData = await tendersResponse.json()
+        setRecentTenders(tendersData.recent_tenders || [])
+      }
     } catch (err) {
-      setError('Ошибка загрузки статистики')
+      setError('Ошибка загрузки данных')
     } finally {
       setLoading(false)
     }
@@ -237,13 +251,14 @@ export default function DashboardPage() {
       <div className="bg-white rounded-lg shadow-sm border border-secondary-200 p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-secondary-900">
-            Последние тендеры
+            {user?.role === 'supplier' ? 'Мои участия в тендерах' : 
+             user?.role === 'manager' ? 'Мои тендеры' : 'Последние тендеры'}
           </h2>
           <Link
-            href="/dashboard/tenders"
+            href={user?.role === 'supplier' ? '/supplier/tenders' : '/dashboard/tenders'}
             className="text-primary-600 hover:text-primary-800 text-sm font-medium flex items-center space-x-1"
           >
-            <span>Все тендеры</span>
+            <span>{user?.role === 'supplier' ? 'Все тендеры' : 'Все тендеры'}</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -258,6 +273,11 @@ export default function DashboardPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
                   Статус
                 </th>
+                {user?.role === 'supplier' && (
+                  <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
+                    Мой статус
+                  </th>
+                )}
                 <th className="px-6 py-3 text-left text-xs font-medium text-secondary-500 uppercase tracking-wider">
                   Дата создания
                 </th>
@@ -267,7 +287,7 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-secondary-200">
-              {stats.recent_tenders?.map((tender) => (
+              {recentTenders.map((tender) => (
                 <tr key={tender.id}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-secondary-900">
@@ -279,6 +299,21 @@ export default function DashboardPage() {
                       {getStatusText(tender.status)}
                     </span>
                   </td>
+                  {user?.role === 'supplier' && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                        tender.my_application_status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                        tender.my_application_status === 'accepted' ? 'bg-green-100 text-green-800' :
+                        tender.my_application_status === 'rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {tender.my_application_status === 'submitted' ? 'Подано' :
+                         tender.my_application_status === 'accepted' ? 'Принято' :
+                         tender.my_application_status === 'rejected' ? 'Отклонено' :
+                         'Неизвестно'}
+                      </span>
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-secondary-600">
                       {formatDate(tender.created_at)}
@@ -286,7 +321,7 @@ export default function DashboardPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <Link
-                      href={`/tenders/${tender.id}`}
+                      href={user?.role === 'supplier' ? `/supplier/tenders/${tender.id}` : `/tenders/${tender.id}`}
                       className="text-primary-600 hover:text-primary-800 text-sm font-medium"
                     >
                       Подробнее

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from database import get_db
-from models import Tender, TenderApplication, User as UserModel, UserRole, TenderStatus
+from models import Tender, TenderApplication, User as UserModel, UserRole, TenderStatus, TenderProduct
 from auth import get_current_active_user
 
 router = APIRouter()
@@ -17,12 +17,16 @@ async def get_dashboard_stats(
     # Базовая статистика для всех пользователей
     stats = {
         "total_tenders": db.query(func.count(Tender.id)).scalar(),
-        "published_tenders": db.query(func.count(Tender.id))
-            .filter(Tender.status == TenderStatus.PUBLISHED)
+        "active_tenders": db.query(func.count(Tender.id))
+            .filter(Tender.status.in_([TenderStatus.PUBLISHED, TenderStatus.IN_PROGRESS]))
             .scalar(),
-        "in_progress_tenders": db.query(func.count(Tender.id))
-            .filter(Tender.status == TenderStatus.IN_PROGRESS)
-            .scalar()
+        "total_applications": db.query(func.count(TenderApplication.id)).scalar(),
+        "total_suppliers": db.query(func.count(UserModel.id))
+            .filter(UserModel.role == UserRole.SUPPLIER)
+            .scalar(),
+        "total_users": db.query(func.count(UserModel.id)).scalar(),
+        "total_products": db.query(func.count()).select_from(TenderProduct).scalar(),
+        "total_amount": db.query(func.sum(Tender.initial_price)).scalar() or 0
     }
     
     if current_user.role == UserRole.SUPPLIER:
@@ -80,43 +84,45 @@ async def get_dashboard_stats(
     
     return stats
 
-@router.get("/recent-activity")
-async def get_recent_activity(
+@router.get("/recent-tenders")
+async def get_recent_tenders(
     current_user: UserModel = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
-    """Получение последних действий для дашборда"""
+    """Получение последних тендеров для дашборда в зависимости от роли пользователя"""
     
     if current_user.role == UserRole.SUPPLIER:
-        # Последние тендеры, в которых участвовал поставщик
+        # Для поставщика - последние тендеры, в которых он участвовал
         recent_applications = (
             db.query(TenderApplication)
             .join(Tender)
             .filter(TenderApplication.supplier_id == current_user.id)
             .order_by(TenderApplication.created_at.desc())
-            .limit(5)
+            .limit(10)
             .all()
         )
         
         return {
-            "recent_applications": [
+            "recent_tenders": [
                 {
-                    "id": app.id,
-                    "tender_id": app.tender_id,
-                    "tender_title": app.tender.title,
-                    "status": app.status,
-                    "created_at": app.created_at
+                    "id": app.tender.id,
+                    "title": app.tender.title,
+                    "status": app.tender.status,
+                    "created_at": app.tender.created_at,
+                    "my_application_status": app.status,
+                    "my_proposed_price": float(app.proposed_price) if app.proposed_price else None
                 }
                 for app in recent_applications
             ]
         }
     
-    else:
-        # Последние тендеры для менеджера/админа
+    elif current_user.role == UserRole.MANAGER:
+        # Для менеджера - тендеры, которые он создал
         recent_tenders = (
             db.query(Tender)
+            .filter(Tender.created_by == current_user.id)
             .order_by(Tender.created_at.desc())
-            .limit(5)
+            .limit(10)
             .all()
         )
         
@@ -128,6 +134,29 @@ async def get_recent_activity(
                     "status": tender.status,
                     "created_at": tender.created_at,
                     "applications_count": len(tender.applications)
+                }
+                for tender in recent_tenders
+            ]
+        }
+    
+    else:
+        # Для админа и контрактного управляющего - все тендеры
+        recent_tenders = (
+            db.query(Tender)
+            .order_by(Tender.created_at.desc())
+            .limit(10)
+            .all()
+        )
+        
+        return {
+            "recent_tenders": [
+                {
+                    "id": tender.id,
+                    "title": tender.title,
+                    "status": tender.status,
+                    "created_at": tender.created_at,
+                    "applications_count": len(tender.applications),
+                    "created_by": tender.created_by
                 }
                 for tender in recent_tenders
             ]

@@ -61,7 +61,7 @@ export default function SupplierProposalsPage() {
       const params = new URLSearchParams();
       if (statusFilter) params.append('status', statusFilter);
 
-      const response = await fetch(`/api/v1/suppliers/proposals?${params}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/suppliers/proposals?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

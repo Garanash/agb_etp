@@ -60,7 +60,7 @@ async def get_user(
     return user
 
 
-@router.post("/", response_model=UserSchema)
+@router.post("/")
 async def create_user(
     user_data: UserCreate,
     current_user: UserModel = Depends(require_role(UserRole.ADMIN)),
@@ -91,7 +91,8 @@ async def create_user(
     db.refresh(db_user)
     
     # Возвращаем пользователя с сгенерированным паролем для передачи администратору
-    user_dict = db_user.__dict__.copy()
+    user_response = UserSchema.from_orm(db_user)
+    user_dict = user_response.dict()
     user_dict['generated_password'] = password
     return user_dict
 

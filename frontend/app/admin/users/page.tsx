@@ -234,13 +234,22 @@ export default function UsersManagementPage() {
               <h1 className="text-3xl font-bold text-secondary-900">Управление пользователями</h1>
               <p className="mt-2 text-secondary-600">Создание, редактирование и управление пользователями системы</p>
             </div>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="btn-primary flex items-center space-x-2"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Добавить пользователя</span>
-            </button>
+            <div className="flex space-x-3">
+              <Link
+                href="/admin/import"
+                className="btn-secondary flex items-center space-x-2"
+              >
+                <FileText className="h-4 w-4" />
+                <span>Импорт тендеров</span>
+              </Link>
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="btn-primary flex items-center space-x-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Добавить пользователя</span>
+              </button>
+            </div>
           </div>
         </div>
 
