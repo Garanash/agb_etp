@@ -108,12 +108,6 @@ export default function ApplyToTenderPage() {
       if (response.ok) {
         const data = await response.json();
         setCurrentUser(data);
-        
-        // Проверяем, что пользователь - поставщик
-        if (data.role !== 'supplier') {
-          setError('Только поставщики могут подавать заявки на тендеры');
-          return;
-        }
       }
     } catch (err) {
       console.error('Ошибка загрузки данных пользователя:', err);
@@ -129,7 +123,7 @@ export default function ApplyToTenderPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       
       // Получаем информацию о тендере
-      const tenderResponse = await fetch(`${apiUrl}/api/v1/suppliers/tenders/${tenderId}`, {
+      const tenderResponse = await fetch(`${apiUrl}/api/v1/tenders/${tenderId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -143,7 +137,7 @@ export default function ApplyToTenderPage() {
       setTender(tenderData);
 
       // Получаем список товаров для предложения
-      const productsResponse = await fetch(`${apiUrl}/api/v1/suppliers/tenders/${tenderId}/products`, {
+      const productsResponse = await fetch(`${apiUrl}/api/v1/tenders/${tenderId}/products`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

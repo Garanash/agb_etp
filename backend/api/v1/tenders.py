@@ -205,6 +205,42 @@ async def get_tender(
     return tender
 
 
+@router.get("/{tender_id}/products")
+async def get_tender_products(
+    tender_id: int,
+    db: Session = Depends(get_db)
+):
+    """Получение списка товаров тендера для подачи заявки"""
+    # Проверяем, что тендер существует
+    tender = db.query(Tender).filter(Tender.id == tender_id).first()
+    if not tender:
+        raise HTTPException(
+            status_code=404,
+            detail="Тендер не найден"
+        )
+    
+    # Получаем все лоты тендера
+    lots = db.query(TenderLot).filter(TenderLot.tender_id == tender_id).all()
+    
+    # Собираем все товары из всех лотов
+    products = []
+    for lot in lots:
+        lot_products = db.query(TenderProduct).filter(TenderProduct.lot_id == lot.id).all()
+        for product in lot_products:
+            products.append({
+                "id": product.id,
+                "lot_id": product.lot_id,
+                "lot_number": lot.lot_number,
+                "lot_title": lot.title,
+                "position_number": product.position_number,
+                "name": product.name,
+                "quantity": product.quantity,
+                "unit_of_measure": product.unit_of_measure,
+            })
+    
+    return products
+
+
 @router.post("/", response_model=TenderSchema)
 async def create_tender(
     tender_data: TenderCreate,
