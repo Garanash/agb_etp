@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: agb-postgres
+    environment:
+      POSTGRES_USER: agb_etp
+      POSTGRES_PASSWORD: agb_secure_password_2024
+      POSTGRES_DB: agb_etp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    # Ограничения ресурсов для сервера с 4GB RAM
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+volumes:
+  postgres_data:
