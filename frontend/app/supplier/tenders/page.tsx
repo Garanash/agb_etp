@@ -164,9 +164,8 @@ export default function SupplierTendersPage() {
     <div className="px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Тендеры для участия</h1>
-        <p className="mt-2 text-gray-600">Выберите тендер и подайте свое предложение</p>
+        <p className="mt-2 text-gray-600">Просмотр и подача заявок на тендеры</p>
       </div>
-
       {/* Фильтры */}
       <div className="bg-white shadow rounded-lg p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
