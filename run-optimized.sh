@@ -32,12 +32,12 @@ mkdir -p logs
 echo "📝 Создание .env файла..."
 cat > .env << EOF
 # Database
-DATABASE_URL=postgresql://agb_etp:agb_secure_password_2024@localhost:5432/agb_etp
+DATABASE_URL=postgresql://agb_etp:agb_secure_password_2024@localhost:5433/agb_etp
 POSTGRES_USER=agb_etp
 POSTGRES_PASSWORD=agb_secure_password_2024
 POSTGRES_DB=agb_etp
 POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
+POSTGRES_PORT=5433
 
 # Security
 SECRET_KEY=your-secret-key-here-change-in-production
@@ -211,7 +211,7 @@ echo "🎉 Система запущена!"
 echo "📱 Frontend: http://$SERVER_IP:3000"
 echo "🔌 Backend API: http://$SERVER_IP:8000"
 echo "📚 API документация: http://$SERVER_IP:8000/docs"
-echo "🐘 PostgreSQL: localhost:5432"
+echo "🐘 PostgreSQL: localhost:5433"
 echo ""
 echo "🔍 Логи:"
 echo "   Backend: tail -f logs/backend.log"

@@ -62,7 +62,7 @@
 ### Порты
 - **Frontend**: 3000
 - **Backend API**: 8000
-- **PostgreSQL**: 5432
+- **PostgreSQL**: 5433
 
 ## 🚀 Быстрый старт
 
@@ -150,7 +150,7 @@ netstat -tlnp | grep 8000
 - ✅ Frontend: `http://your-server-ip:3000`
 - ✅ Backend API: `http://your-server-ip:8000`
 - ✅ API документация: `http://your-server-ip:8000/docs`
-- ✅ PostgreSQL: `localhost:5432`
+- ✅ PostgreSQL: `localhost:5433`
 
 ## 🔄 Обновление
 
