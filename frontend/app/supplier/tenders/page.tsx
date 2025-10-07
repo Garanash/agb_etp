@@ -52,7 +52,7 @@ export default function SupplierTendersPage() {
       if (statusFilter) params.append('status', statusFilter);
       if (regionFilter) params.append('region', regionFilter);
 
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
       const response = await fetch(`${apiUrl}/api/v1/suppliers/tenders?${params}`, {
         headers: {

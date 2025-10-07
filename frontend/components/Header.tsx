@@ -9,6 +9,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userName, setUserName] = useState('')
+  const [userRole, setUserRole] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function Header() {
       if (response.ok) {
         const userData = await response.json()
         setUserName(userData.full_name)
+        setUserRole(userData.role)
       }
     } catch (error) {
       console.error('Ошибка загрузки информации о пользователе:', error)
@@ -65,14 +67,35 @@ export default function Header() {
 
           {/* Навигация для десктопа */}
           <nav className="hidden md:flex space-x-8">
-            {isAuthenticated && (
+            {isAuthenticated && userRole === 'supplier' ? (
+              <>
+                <Link 
+                  href="/supplier/tenders" 
+                  className="text-secondary-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  Тендеры для участия
+                </Link>
+                <Link 
+                  href="/supplier/proposals" 
+                  className="text-secondary-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  Мои предложения
+                </Link>
+                <Link 
+                  href="/supplier/application-guide" 
+                  className="text-secondary-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
+                >
+                  Как подать заявку
+                </Link>
+              </>
+            ) : isAuthenticated ? (
               <Link 
                 href="/dashboard" 
                 className="text-secondary-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
               >
                 Дашборд
               </Link>
-            )}
+            ) : null}
             <Link 
               href="/tenders" 
               className="text-secondary-700 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-colors"
@@ -170,13 +193,39 @@ export default function Header() {
               <div className="border-t border-secondary-200 pt-4 mt-4">
                 {isAuthenticated ? (
                   <>
-                    <Link 
-                      href="/dashboard" 
-                      className="text-secondary-700 hover:text-primary-600 block px-3 py-2 text-base font-medium"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Личный кабинет
-                    </Link>
+                    {userRole === 'supplier' ? (
+                      <>
+                        <Link 
+                          href="/supplier/tenders" 
+                          className="text-secondary-700 hover:text-primary-600 block px-3 py-2 text-base font-medium"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Тендеры для участия
+                        </Link>
+                        <Link 
+                          href="/supplier/proposals" 
+                          className="text-secondary-700 hover:text-primary-600 block px-3 py-2 text-base font-medium"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Мои предложения
+                        </Link>
+                        <Link 
+                          href="/supplier/application-guide" 
+                          className="text-secondary-700 hover:text-primary-600 block px-3 py-2 text-base font-medium"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Как подать заявку
+                        </Link>
+                      </>
+                    ) : (
+                      <Link 
+                        href="/dashboard" 
+                        className="text-secondary-700 hover:text-primary-600 block px-3 py-2 text-base font-medium"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Личный кабинет
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         handleLogout()
