@@ -5,14 +5,8 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
   },
-  // Совместимость с браузерами
-  experimental: {
-    esmExternals: 'loose'
-  },
   // Оптимизация для продакшена
   swcMinify: true,
-  // Поддержка старых браузеров
-  transpilePackages: [],
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
