@@ -241,6 +241,86 @@ async def get_tender_products(
     return products
 
 
+@router.post("/{tender_id}/proposals")
+async def create_tender_proposal(
+    tender_id: int,
+    proposal_data: dict,
+    current_user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Создание предложения по тендеру (доступно всем пользователям)"""
+    
+    # Проверяем, что пользователь - поставщик
+    if current_user.role != UserRole.SUPPLIER:
+        raise HTTPException(
+            status_code=403,
+            detail="Только поставщики могут подавать заявки на тендеры"
+        )
+    
+    # Проверяем, что тендер существует и опубликован
+    tender = db.query(Tender).filter(Tender.id == tender_id).first()
+    if not tender:
+        raise HTTPException(
+            status_code=404,
+            detail="Тендер не найден"
+        )
+    
+    if tender.status != TenderStatus.PUBLISHED:
+        raise HTTPException(
+            status_code=400,
+            detail="Нельзя подавать предложения на неопубликованные тендеры"
+        )
+    
+    # Импортируем необходимые модели
+    from models import SupplierProposal, ProposalItem
+    
+    # Проверяем, что у поставщика еще нет предложения на этот тендер
+    existing_proposal = db.query(SupplierProposal).filter(
+        and_(
+            SupplierProposal.tender_id == tender_id,
+            SupplierProposal.supplier_id == current_user.id
+        )
+    ).first()
+    
+    if existing_proposal:
+        raise HTTPException(
+            status_code=400,
+            detail="У вас уже есть предложение по этому тендеру"
+        )
+    
+    # Создаем предложение
+    proposal = SupplierProposal(
+        tender_id=tender_id,
+        supplier_id=current_user.id,
+        prepayment_percent=proposal_data.get('prepayment_percent', 0),
+        currency=proposal_data.get('currency', 'RUB'),
+        vat_percent=proposal_data.get('vat_percent', 20),
+        general_comment=proposal_data.get('general_comment', ''),
+        status='draft'
+    )
+    
+    db.add(proposal)
+    db.flush()  # Получаем ID предложения
+    
+    # Создаем элементы предложения
+    for item_data in proposal_data.get('proposal_items', []):
+        proposal_item = ProposalItem(
+            proposal_id=proposal.id,
+            product_id=item_data['product_id'],
+            is_available=item_data.get('is_available', True),
+            is_analog=item_data.get('is_analog', False),
+            price_per_unit=item_data.get('price_per_unit'),
+            delivery_days=item_data.get('delivery_days'),
+            comment=item_data.get('comment', '')
+        )
+        db.add(proposal_item)
+    
+    db.commit()
+    db.refresh(proposal)
+    
+    return {"id": proposal.id, "status": "created"}
+
+
 @router.post("/", response_model=TenderSchema)
 async def create_tender(
     tender_data: TenderCreate,

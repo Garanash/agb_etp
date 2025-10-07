@@ -108,6 +108,12 @@ export default function ApplyToTenderPage() {
       if (response.ok) {
         const data = await response.json();
         setCurrentUser(data);
+        
+        // Проверяем, что пользователь - поставщик
+        if (data.role !== 'supplier') {
+          setError('Только поставщики могут подавать заявки на тендеры. Ваша роль: ' + data.role);
+          return;
+        }
       }
     } catch (err) {
       console.error('Ошибка загрузки данных пользователя:', err);
@@ -188,37 +194,23 @@ export default function ApplyToTenderPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       
       // Создаем новое предложение
-      const response = await fetch(`${apiUrl}/api/v1/suppliers/proposals`, {
+      const response = await fetch(`${apiUrl}/api/v1/tenders/${tenderId}/proposals`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          ...proposalForm,
-          tender_id: tenderId,
-        }),
+        body: JSON.stringify(proposalForm),
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка создания предложения');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Ошибка создания предложения (${response.status})`);
       }
 
       const proposalData = await response.json();
 
-      // Отправляем предложение
-      const proposalResponse = await fetch(`${apiUrl}/api/v1/suppliers/proposals/${proposalData.id}/submit`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (!proposalResponse.ok) {
-        throw new Error('Ошибка отправки предложения');
-      }
-
-      alert('Предложение успешно отправлено!');
+      alert('Предложение успешно создано!');
       router.push('/supplier/proposals');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Произошла ошибка');
