@@ -7,8 +7,10 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User, UserRole
+import hashlib
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Используем sha256 вместо bcrypt для избежания проблем
+pwd_context = CryptContext(schemes=["sha256_crypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/auth/login")
 
 SECRET_KEY = "your-secret-key-here"
