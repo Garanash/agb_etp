@@ -28,7 +28,7 @@ def create_admin():
         # Создаем администратора
         admin_user = User(
             email="admin@almazgeobur.ru",
-            hashed_password=get_password_hash("admin123"[:72]),  # Ограничиваем длину пароля для bcrypt
+            hashed_password=get_password_hash("admin"),  # Короткий пароль для bcrypt
             full_name="Администратор системы",
             role=UserRole.ADMIN,
             is_active=True
@@ -38,7 +38,7 @@ def create_admin():
         db.commit()
         print("Администратор создан успешно!")
         print("Email: admin@almazgeobur.ru")
-        print("Пароль: admin123")
+        print("Пароль: admin")
         
     except Exception as e:
         print(f"Ошибка при создании администратора: {e}")
