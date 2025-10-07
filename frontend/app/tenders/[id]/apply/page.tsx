@@ -210,8 +210,11 @@ export default function ApplyToTenderPage() {
 
       const proposalData = await response.json();
 
-      alert('Предложение успешно создано!');
-      router.push('/supplier/proposals');
+      // Определяем куда перенаправить пользователя в зависимости от его роли
+      const redirectPath = currentUser?.role === 'supplier' ? '/supplier/proposals' : '/dashboard';
+      
+      alert(`Предложение по тендеру №${tenderId} успешно создано!`);
+      router.push(redirectPath);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Произошла ошибка');
     } finally {

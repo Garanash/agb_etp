@@ -62,7 +62,7 @@ export default function SupplierProposalsPage() {
       if (statusFilter) params.append('status', statusFilter);
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-      const response = await fetch(`${apiUrl}/api/v1/suppliers/proposals?${params}`, {
+      const response = await fetch(`${apiUrl}/api/v1/tenders/proposals?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

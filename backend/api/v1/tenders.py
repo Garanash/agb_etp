@@ -321,6 +321,69 @@ async def create_tender_proposal(
     return {"id": proposal.id, "status": "created"}
 
 
+@router.get("/proposals")
+async def get_user_proposals(
+    current_user: UserModel = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Получение предложений пользователя (доступно всем пользователям)"""
+    
+    # Проверяем, что пользователь - поставщик
+    if current_user.role != UserRole.SUPPLIER:
+        raise HTTPException(
+            status_code=403,
+            detail="Только поставщики могут просматривать предложения"
+        )
+    
+    # Импортируем необходимые модели
+    from models import SupplierProposal, ProposalItem
+    
+    # Получаем предложения пользователя
+    proposals = db.query(SupplierProposal).filter(
+        SupplierProposal.supplier_id == current_user.id
+    ).all()
+    
+    # Загружаем связанные данные
+    result = []
+    for proposal in proposals:
+        proposal_data = {
+            "id": proposal.id,
+            "tender_id": proposal.tender_id,
+            "supplier_id": proposal.supplier_id,
+            "prepayment_percent": proposal.prepayment_percent,
+            "currency": proposal.currency,
+            "vat_percent": proposal.vat_percent,
+            "general_comment": proposal.general_comment,
+            "status": proposal.status,
+            "created_at": proposal.created_at.isoformat() if proposal.created_at else None,
+            "updated_at": proposal.updated_at.isoformat() if proposal.updated_at else None,
+            "proposal_items": []
+        }
+        
+        # Загружаем элементы предложения
+        items = db.query(ProposalItem).filter(
+            ProposalItem.proposal_id == proposal.id
+        ).all()
+        
+        for item in items:
+            proposal_data["proposal_items"].append({
+                "id": item.id,
+                "proposal_id": item.proposal_id,
+                "product_id": item.product_id,
+                "is_available": item.is_available,
+                "is_analog": item.is_analog,
+                "price_per_unit": float(item.price_per_unit) if item.price_per_unit else None,
+                "delivery_days": item.delivery_days,
+                "comment": item.comment,
+                "created_at": item.created_at.isoformat() if item.created_at else None,
+                "updated_at": item.updated_at.isoformat() if item.updated_at else None,
+            })
+        
+        result.append(proposal_data)
+    
+    return result
+
+
 @router.post("/", response_model=TenderSchema)
 async def create_tender(
     tender_data: TenderCreate,
