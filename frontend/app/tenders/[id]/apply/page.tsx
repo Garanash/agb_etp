@@ -83,7 +83,7 @@ export default function ApplyToTenderPage() {
   });
 
   useEffect(() => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     if (!token) {
       router.push('/login');
       return;
@@ -95,7 +95,7 @@ export default function ApplyToTenderPage() {
 
   const fetchCurrentUser = async () => {
     try {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
       if (!token) return;
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -123,7 +123,7 @@ export default function ApplyToTenderPage() {
   const fetchTenderData = async () => {
     try {
       setLoading(true);
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
       if (!token) return;
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -188,7 +188,7 @@ export default function ApplyToTenderPage() {
   const handleSubmitProposal = async () => {
     try {
       setSubmitting(true);
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
       if (!token) return;
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -292,137 +292,173 @@ export default function ApplyToTenderPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Заголовок */}
         <div className="mb-8">
           <Link
             href={`/tenders/${tenderId}`}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center"
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-1" />
             Назад к тендеру
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mt-4">Подача заявки на тендер</h1>
-          <p className="mt-2 text-gray-600">{tender.title}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Запрос предложений №{tenderId} от {tender.publication_date ? formatDate(tender.publication_date) : 'Н/Д'}</h1>
+          <p className="text-gray-600 mt-1">{tender.title}</p>
+        </div>
+
+        {/* Табы */}
+        <div className="border-b border-gray-200 mb-6">
+          <nav className="-mb-px flex space-x-8">
+            <button className="py-2 px-1 border-b-2 border-blue-500 text-blue-600 font-medium text-sm">
+              Аналитика
+            </button>
+            <button className="py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm">
+              Результаты
+            </button>
+          </nav>
         </div>
 
         {/* Информация о тендере */}
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Информация о тендере</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <span className="text-sm font-medium text-gray-500">Начальная цена:</span>
-              <p className="text-sm text-gray-900">{formatPrice(tender.initial_price, tender.currency)}</p>
+        <div className="bg-gray-800 text-white rounded-lg p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold">3</div>
+              <div className="text-sm text-gray-300">ПРЕДЛОЖЕНИЙ</div>
             </div>
-            <div>
-              <span className="text-sm font-medium text-gray-500">Срок подачи:</span>
-              <p className="text-sm text-gray-900">{tender.deadline ? formatDate(tender.deadline) : 'Не указан'}</p>
+            <div className="text-center">
+              <div className="text-lg font-semibold">склад поставщика</div>
+              <div className="text-sm text-gray-300">МЕСТО ПОСТАВКИ</div>
             </div>
-            <div>
-              <span className="text-sm font-medium text-gray-500">Регион:</span>
-              <p className="text-sm text-gray-900">{tender.region || 'Не указан'}</p>
+            <div className="text-center">
+              <div className="text-lg font-semibold">Н/П</div>
+              <div className="text-sm text-gray-300">ДАТА ПОСТАВКИ ДО</div>
             </div>
-            <div>
-              <span className="text-sm font-medium text-gray-500">Способ закупки:</span>
-              <p className="text-sm text-gray-900">{tender.procurement_method}</p>
-            </div>
-            <div>
-              <span className="text-sm font-medium text-gray-500">Дата публикации:</span>
-              <p className="text-sm text-gray-900">{tender.publication_date ? formatDate(tender.publication_date) : 'Не указана'}</p>
-            </div>
-            <div>
-              <span className="text-sm font-medium text-gray-500">Статус:</span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                Опубликован
-              </span>
+            <div className="text-center">
+              <div className="text-lg font-semibold">{tender.deadline ? formatDate(tender.deadline) : 'Н/Д'}</div>
+              <div className="text-sm text-gray-300">ДАТА ЗАВЕРШЕНИЯ</div>
             </div>
           </div>
         </div>
 
-        {/* Общие параметры предложения */}
+        {/* Предупреждение */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <div className="flex">
+            <AlertCircle className="h-5 w-5 text-yellow-400" />
+            <div className="ml-3">
+              <p className="text-sm text-yellow-800">
+                <strong>Внимание!</strong> Спецификацию можно отправить только один раз.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Форма предложения */}
         <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Общие параметры предложения</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Ваше предложение к тендеру №{tenderId}</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label htmlFor="prepayment" className="block text-sm font-medium text-gray-700 mb-1">
-                Размер предоплаты (%)
+              <label htmlFor="prepayment" className="block text-sm font-medium text-gray-700 mb-2">
+                РАЗМЕР ПРЕДОПЛАТЫ:
               </label>
-              <input
-                type="number"
-                id="prepayment"
-                value={proposalForm.prepayment_percent}
-                onChange={(e) => setProposalForm(prev => ({ ...prev, prepayment_percent: parseFloat(e.target.value) || 0 }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="relative">
+                <select
+                  id="prepayment"
+                  value={proposalForm.prepayment_percent}
+                  onChange={(e) => setProposalForm(prev => ({ ...prev, prepayment_percent: parseFloat(e.target.value) || 0 }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                >
+                  <option value="0">0%</option>
+                  <option value="10">10%</option>
+                  <option value="20">20%</option>
+                  <option value="30">30%</option>
+                  <option value="50">50%</option>
+                  <option value="100">100%</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
             
             <div>
-              <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
-                Валюта
+              <label htmlFor="vat" className="block text-sm font-medium text-gray-700 mb-2">
+                ЦЕНЫ С УЧЕТОМ НДС:
               </label>
-              <select
-                id="currency"
-                value={proposalForm.currency}
-                onChange={(e) => setProposalForm(prev => ({ ...prev, currency: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="RUB">RUB - Российский рубль</option>
-                <option value="USD">USD - Доллар США</option>
-                <option value="EUR">EUR - Евро</option>
-              </select>
+              <div className="relative">
+                <select
+                  id="vat"
+                  value={proposalForm.vat_percent}
+                  onChange={(e) => setProposalForm(prev => ({ ...prev, vat_percent: parseFloat(e.target.value) || 0 }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                >
+                  <option value="0">Без НДС</option>
+                  <option value="10">НДС 10%</option>
+                  <option value="20">НДС 20%</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
-            
-            <div>
-              <label htmlFor="vat" className="block text-sm font-medium text-gray-700 mb-1">
-                НДС (%)
-              </label>
-              <input
-                type="number"
-                id="vat"
-                value={proposalForm.vat_percent}
-                onChange={(e) => setProposalForm(prev => ({ ...prev, vat_percent: parseFloat(e.target.value) || 0 }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              ФАЙЛЫ:
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+              <svg className="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+              </svg>
+              <p className="mt-2 text-sm text-gray-600">Перетащите файлы сюда или нажмите для выбора</p>
             </div>
           </div>
           
-          <div className="mt-4">
-            <label htmlFor="general_comment" className="block text-sm font-medium text-gray-700 mb-1">
-              Общий комментарий к предложению
+          <div>
+            <label htmlFor="general_comment" className="block text-sm font-medium text-gray-700 mb-2">
+              ОБЩИЙ КОММЕНТАРИЙ К ВАШЕМУ ПРЕДЛОЖЕНИЮ:
             </label>
             <textarea
               id="general_comment"
               value={proposalForm.general_comment}
               onChange={(e) => setProposalForm(prev => ({ ...prev, general_comment: e.target.value }))}
-              rows={3}
+              rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Введите общий комментарий к вашему предложению..."
             />
           </div>
         </div>
 
-        {/* Предложения по товарам */}
-        <div className="bg-white shadow rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Предложения по товарам</h2>
+        {/* Таблица товаров */}
+        <div className="bg-white shadow rounded-lg overflow-hidden mb-6">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Товар
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    НАИМ. ТМЦ/УСЛУГИ
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    В наличии
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    КОЛ-ВО
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Аналог
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    В НАЛИЧИИ
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Цена за единицу
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    АНАЛОГ
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Срок поставки (дни)
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ЦЕНА С УЧЕТОМ НДС
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Комментарий
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ВРЕМЯ ДОСТАВКИ
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    КОММЕНТАРИЙ
                   </th>
                 </tr>
               </thead>
@@ -432,49 +468,61 @@ export default function ApplyToTenderPage() {
                   if (!product) return null;
                   
                   return (
-                    <tr key={item.product_id}>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                    <tr key={item.product_id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 text-sm text-gray-900">
                         <div>
                           <div className="font-medium">{product.name}</div>
-                          <div className="text-gray-500">Лот {product.lot_number}</div>
+                          <div className="text-gray-500 text-xs">{product.position_number ? `${product.position_number} / ` : ''}${product.id}</div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          checked={item.is_available}
-                          onChange={(e) => handleProposalItemChange(item.product_id, 'is_available', e.target.checked)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
+                      <td className="px-4 py-4 text-sm text-gray-900">
+                        {product.quantity ? `x${product.quantity}` : '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="checkbox"
-                          checked={item.is_analog}
-                          onChange={(e) => handleProposalItemChange(item.product_id, 'is_analog', e.target.checked)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
+                      <td className="px-4 py-4 text-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={item.is_available}
+                            onChange={(e) => handleProposalItemChange(item.product_id, 'is_available', e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600`}></div>
+                        </label>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={item.price_per_unit || ''}
-                          onChange={(e) => handleProposalItemChange(item.product_id, 'price_per_unit', parseFloat(e.target.value) || null)}
-                          className="w-24 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="0.00"
-                        />
+                      <td className="px-4 py-4 text-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={item.is_analog}
+                            onChange={(e) => handleProposalItemChange(item.product_id, 'is_analog', e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600`}></div>
+                        </label>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4">
+                        <div className="flex items-center">
+                          <span className="text-sm text-gray-500 mr-1">€</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={item.price_per_unit || ''}
+                            onChange={(e) => handleProposalItemChange(item.product_id, 'price_per_unit', parseFloat(e.target.value) || null)}
+                            className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="0.00"
+                          />
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
                         <input
                           type="number"
                           value={item.delivery_days || ''}
                           onChange={(e) => handleProposalItemChange(item.product_id, 'delivery_days', parseInt(e.target.value) || null)}
-                          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                           placeholder="0"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-4 py-4">
                         <input
                           type="text"
                           value={item.comment || ''}
@@ -495,14 +543,14 @@ export default function ApplyToTenderPage() {
         <div className="flex justify-end space-x-4">
           <Link
             href={`/tenders/${tenderId}`}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-6 py-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Отмена
           </Link>
           <button
             onClick={handleSubmitProposal}
             disabled={submitting}
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
             {submitting ? (
               <>
