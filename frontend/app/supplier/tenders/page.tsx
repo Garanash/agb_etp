@@ -52,8 +52,9 @@ export default function SupplierTendersPage() {
       if (statusFilter) params.append('status', statusFilter);
       if (regionFilter) params.append('region', regionFilter);
 
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/v1/suppliers/tenders?${params}`, {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+      const response = await fetch(`${apiUrl}/api/v1/suppliers/tenders?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -160,7 +161,7 @@ export default function SupplierTendersPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Тендеры для участия</h1>
         <p className="mt-2 text-gray-600">Выберите тендер и подайте свое предложение</p>
