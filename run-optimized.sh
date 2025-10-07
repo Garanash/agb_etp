@@ -52,7 +52,7 @@ ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 # CORS
-CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://$SERVER_IP:3000
+CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://$SERVER_IP:3000,http://$SERVER_IP:8000,http://localhost:8000,http://127.0.0.1:8000
 
 # File uploads
 ALLOWED_FILE_TYPES=pdf,doc,docx,xls,xlsx
@@ -142,6 +142,11 @@ if curl -s http://localhost:8000/health > /dev/null; then
     echo "🔧 Инициализация базы данных..."
     cd backend
     python3 init_db.py
+    
+    # Выполнение миграции точности полей
+    echo "🔄 Выполнение миграции точности полей..."
+    python3 ../migrate_precision.py
+    
     cd ..
 else
     echo "❌ Backend не запустился"

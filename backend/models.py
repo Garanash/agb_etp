@@ -82,7 +82,7 @@ class Tender(Base):
     title = Column(String, nullable=False)
     description = Column(Text, nullable=False)
     notice_number = Column(String, unique=True)  # Номер извещения
-    initial_price = Column(Numeric(15, 2))
+    initial_price = Column(Numeric(20, 2))
     currency = Column(String, default="RUB")
     status = Column(Enum(TenderStatus), default=TenderStatus.DRAFT)
     publication_date = Column(DateTime(timezone=True))
@@ -111,9 +111,9 @@ class TenderLot(Base):
     lot_number = Column(Integer, nullable=False)
     title = Column(String, nullable=False)
     description = Column(Text)
-    initial_price = Column(Numeric(15, 2))
+    initial_price = Column(Numeric(20, 2))
     currency = Column(String, default="RUB")
-    security_amount = Column(Numeric(15, 2))  # Размер обеспечения заявки
+    security_amount = Column(Numeric(20, 2))  # Размер обеспечения заявки
     delivery_place = Column(Text)  # Место поставки
     payment_terms = Column(Text)  # Условия оплаты
     quantity = Column(String)  # Количество
@@ -198,7 +198,7 @@ class TenderApplication(Base):
     tender_id = Column(Integer, ForeignKey("tenders.id"))
     lot_id = Column(Integer, ForeignKey("tender_lots.id"), nullable=True)
     supplier_id = Column(Integer, ForeignKey("users.id"))
-    proposed_price = Column(Numeric(15, 2))
+    proposed_price = Column(Numeric(20, 2))
     comment = Column(Text)
     status = Column(String, default="submitted")  # submitted, accepted, rejected
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -238,7 +238,7 @@ class ProposalItem(Base):
     product_id = Column(Integer, ForeignKey("tender_products.id"))
     is_available = Column(Boolean, default=True)  # Тогл наличия товара
     is_analog = Column(Boolean, default=False)  # Тогл оригинал/аналог
-    price_per_unit = Column(Numeric(15, 2))  # Цена за единицу
+    price_per_unit = Column(Numeric(20, 2))  # Цена за единицу
     delivery_days = Column(Integer)  # Срок поставки в днях
     comment = Column(Text)  # Комментарий к позиции
     created_at = Column(DateTime(timezone=True), server_default=func.now())

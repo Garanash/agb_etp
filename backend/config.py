@@ -26,7 +26,14 @@ class Settings(BaseSettings):
     debug: bool = True
     
     # Настройки CORS
-    cors_origins: List[str] = ["http://localhost:3000", "http://127.0.0.1:3000", "http://81.200.158.192:3000"]
+    cors_origins: List[str] = [
+        "http://localhost:3000", 
+        "http://127.0.0.1:3000", 
+        "http://81.200.158.192:3000",
+        "http://81.200.158.192:8000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000"
+    ]
     
     # Настройки файлов
     upload_dir: str = "uploads"
