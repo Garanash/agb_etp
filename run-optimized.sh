@@ -21,9 +21,16 @@ echo "🌐 IP сервера: $SERVER_IP"
 echo "🛑 Остановка всех процессов..."
 pkill -f "python3 main.py" 2>/dev/null || true
 pkill -f "npm start" 2>/dev/null || true
+pkill -f "next start" 2>/dev/null || true
+pkill -f "node.*next" 2>/dev/null || true
 docker stop agb-postgres 2>/dev/null || true
 docker rm agb-postgres 2>/dev/null || true
-sleep 3
+
+# Принудительная очистка портов
+echo "🔍 Очистка портов..."
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+lsof -ti:8000 | xargs kill -9 2>/dev/null || true
+sleep 5
 
 # Создание папки для логов
 mkdir -p logs
@@ -147,12 +154,16 @@ fi
 echo "📦 Установка Node.js зависимостей..."
 cd frontend
 
-# Очистка кэша
+# Полная очистка
+echo "🧹 Полная очистка frontend..."
+rm -rf .next
+rm -rf node_modules
+rm -f package-lock.json
 npm cache clean --force
 
 # Установка с минимальным потреблением памяти
 export NODE_OPTIONS="--max-old-space-size=512"
-npm install --production --no-audit --no-fund --prefer-offline --silent
+npm install --no-audit --no-fund --prefer-offline --silent
 
 if [ $? -ne 0 ]; then
     echo "⚠️  Попытка установки с dev зависимостями..."

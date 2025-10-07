@@ -7,6 +7,14 @@ const nextConfig = {
   },
   // Оптимизация для продакшена
   swcMinify: true,
+  // Настройки для статических файлов
+  trailingSlash: false,
+  // Отключаем оптимизацию изображений для лучшей совместимости
+  images: {
+    unoptimized: true,
+  },
+  // Настройки для production
+  output: 'standalone',
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,

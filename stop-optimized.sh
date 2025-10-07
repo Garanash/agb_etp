@@ -8,6 +8,13 @@ echo "🛑 Остановка Алмазгеобур ЭТП..."
 echo "⏹️  Остановка Backend и Frontend..."
 pkill -f "python3 main.py" 2>/dev/null || true
 pkill -f "npm start" 2>/dev/null || true
+pkill -f "next start" 2>/dev/null || true
+pkill -f "node.*next" 2>/dev/null || true
+
+# Дополнительная проверка портов
+echo "🔍 Проверка занятых портов..."
+lsof -ti:3000 | xargs kill -9 2>/dev/null || true
+lsof -ti:8000 | xargs kill -9 2>/dev/null || true
 
 # Остановка PostgreSQL Docker контейнера
 echo "⏹️  Остановка PostgreSQL..."
