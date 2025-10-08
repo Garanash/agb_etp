@@ -80,6 +80,8 @@ export default function TenderDetailPage() {
   const [error, setError] = useState('')
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [activeTab, setActiveTab] = useState('main')
+  const [proposals, setProposals] = useState<any[]>([])
+  const [proposalsLoading, setProposalsLoading] = useState(false)
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
@@ -133,6 +135,29 @@ export default function TenderDetailPage() {
       setError('Ошибка загрузки тендера')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchProposals = async () => {
+    try {
+      setProposalsLoading(true)
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+      if (!token) return
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/tenders/${params.id}/proposals`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setProposals(data)
+      }
+    } catch (err) {
+      console.error('Ошибка загрузки предложений:', err)
+    } finally {
+      setProposalsLoading(false)
     }
   }
 
@@ -206,6 +231,21 @@ export default function TenderDetailPage() {
               >
                 Документация
               </button>
+              {currentUser && ['admin', 'contract_manager', 'manager'].includes(currentUser.role) && (
+                <button
+                  onClick={() => {
+                    setActiveTab('proposals')
+                    fetchProposals()
+                  }}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'proposals'
+                      ? 'border-primary-500 text-primary-600'
+                      : 'border-transparent text-secondary-500 hover:text-secondary-700 hover:border-secondary-300'
+                  }`}
+                >
+                  Предложения
+                </button>
+              )}
             </nav>
           </div>
         </div>
@@ -226,6 +266,92 @@ export default function TenderDetailPage() {
 
           {activeTab === 'docs' && (
             <TenderDocuments documents={tender.documents} />
+          )}
+
+          {activeTab === 'proposals' && (
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Предложения поставщиков</h3>
+              {proposalsLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                  <p className="mt-2 text-gray-600">Загрузка предложений...</p>
+                </div>
+              ) : proposals.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">Предложения не найдены</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Поставщик
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Статус
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Предоплата
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          НДС
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Дата подачи
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Действия
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {proposals.map((proposal) => (
+                        <tr key={proposal.id}>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {proposal.supplier_info?.full_name || 'Неизвестно'}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {proposal.supplier_info?.email || ''}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              proposal.status === 'submitted' ? 'bg-blue-100 text-blue-800' :
+                              proposal.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                              proposal.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                              'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {proposal.status === 'submitted' ? 'Отправлено' :
+                               proposal.status === 'accepted' ? 'Принято' :
+                               proposal.status === 'rejected' ? 'Отклонено' :
+                               'Черновик'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {proposal.prepayment_percent}%
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {proposal.vat_percent}%
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {new Date(proposal.created_at).toLocaleDateString('ru-RU')}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button className="text-primary-600 hover:text-primary-900">
+                              Просмотреть
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           )}
         </div>
 

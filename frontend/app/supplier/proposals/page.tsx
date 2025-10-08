@@ -142,6 +142,29 @@ export default function SupplierProposalsPage() {
     }).format(price);
   };
 
+  const calculateTotalPrice = (proposal: SupplierProposal) => {
+    const total = proposal.proposal_items.reduce((sum, item) => {
+      return sum + (item.price_per_unit || 0);
+    }, 0);
+    return total;
+  };
+
+  const getMinDeliveryDays = (proposal: SupplierProposal) => {
+    const days = proposal.proposal_items
+      .map(item => item.delivery_days)
+      .filter(days => days !== null && days !== undefined) as number[];
+    
+    return days.length > 0 ? Math.min(...days) : null;
+  };
+
+  const getAvailableItemsCount = (proposal: SupplierProposal) => {
+    return proposal.proposal_items.filter(item => item.is_available).length;
+  };
+
+  const getAnalogItemsCount = (proposal: SupplierProposal) => {
+    return proposal.proposal_items.filter(item => item.is_analog).length;
+  };
+
   const getStatusBadge = (status: string) => {
     const statusMap = {
       draft: { text: 'Черновик', className: 'bg-yellow-100 text-yellow-800' },
