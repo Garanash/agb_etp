@@ -182,22 +182,6 @@ export default function SupplierProposalsPage() {
     );
   };
 
-  const calculateTotalPrice = (proposal: SupplierProposal) => {
-    return proposal.proposal_items.reduce((total, item) => {
-      if (item.price_per_unit && item.is_available) {
-        return total + item.price_per_unit;
-      }
-      return total;
-    }, 0);
-  };
-
-  const getAvailableItemsCount = (proposal: SupplierProposal) => {
-    return proposal.proposal_items.filter(item => item.is_available).length;
-  };
-
-  const getAnalogItemsCount = (proposal: SupplierProposal) => {
-    return proposal.proposal_items.filter(item => item.is_analog).length;
-  };
 
   if (loading) {
     return (
